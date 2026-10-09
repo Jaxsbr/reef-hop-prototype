@@ -23,7 +23,7 @@ All four approved sheets are now integrated through `src/animation/actors.js`, w
 
 Jaco selected the classic gull on 2026-10-09 and requested replacing the prototype air bird. [Gull sheet](gull/gull-flap-blink-sheet.png), [manifest](gull/gull-flap-blink.json), and [combined flap/blink preview](gull/gull-flap-with-blink-preview.gif) implement that selected design. Native ImageGen produced the artwork using the [selected gull reference](references/gull-classic-3d.png) and approved Rosie/reef references. The transparent atlas is 2048 × 1024, four columns and two rows of 512 × 512 cells. Its six open-eye flap frames use the same blink mapping as the fish: human frames 7 and 8 replace frames 2 and 3; zero-based replacements are `{1:6,2:7}`. Registered eye donors change only RGB inside the manifest's eye ellipse; base alpha and all outside-eye pixels are identical. Padded cells contain the complete wing tips.
 
-The runtime copy in `public/assets/` is byte-identical. A fixed body anchor keeps the air hazard's collision position stable while the wings flap. Frame duration is 100ms; each gull independently samples the existing 3–6.5-second blink interval. Loss, removal and restart dispose its scheduler. Gameplay uses the existing air lane, speed, spawn timing, bird call and collision limits. `scripts/gull-smoke.mjs` checks the real browser renderer, pixel-level blink swaps, automatic blinking during passes, and actor lifecycle; results and screenshots live in `captures/gull/`.
+The runtime copy in `public/assets/` is byte-identical. A fixed body anchor keeps the collision position stable within the wing animation. Frame duration is 100ms; each gull independently samples the existing 3–6.5-second blink interval. Loss, removal and restart dispose its scheduler. The gull now follows one of four vertical flight routes (short bob, waterward swoop/climb, low rising pass, broad glide), with different families on consecutive birds and varied parameters within each. Horizontal speed remains `1.28 * game speed`; collision follows the actual moving body, with the existing limits. `scripts/gull-smoke.mjs` checks sprite/blink fidelity and actor lifecycle; `scripts/gull-flight-smoke.mjs` checks route variety, pacing and rare audio. Captures live in `captures/gull/` and `captures/gull-flight/`.
 
 ## Approved trash sprites
 
@@ -38,6 +38,10 @@ Jaco selected bottle A, can A, bag B, cup A and boot A ("shoe A") on 2026-10-09 
 | Boot | A — olive-brown lace-up boot | [Boot](trash/boot.png) | 62 px |
 
 Each original is 1254 × 1254 with alpha transparency. [Presentation manifest](trash/trash.json) records selections and the largest connected alpha > 128 component's bounds. `src/trash-art.js` uses those bounds to center visible shapes and apply uniform scale without changing source pixels. The hazard container still owns bobbing, rotation, wake response and collision. `scripts/trash-smoke.mjs` verifies all five texture selections, source/runtime equality, proportions, wake movement, offscreen cleanup, collision and restart. Actual-scale capture and report are in `captures/trash/`.
+
+## Approved gull recording
+
+Jaco selected recorded option 1 on 2026-10-10: [Gull call](audio/gull-call.wav), the unmodified 1.556-second `Seagull Ambient 2.wav` from Rango Mango's [Solo Seagull Sound Effects](https://opengameart.org/content/solo-seagull-sound-effects). The source publishes the pack under CC0, with commercial use allowed and no attribution required. [Source and license metadata](audio/gull-call.json) records the download URL, approval, and checksum. Vite bundles this file directly; no duplicate in `public/assets/` is needed. Each spawned gull has a 50% chance of one call at a random point during its visible flight and a 50% chance of silence. `OceanAudio.bird()` uses the master volume/mute gain, with independent sources and no shared quiet period to suppress nearby callers.
 
 ## Approved shark animation
 

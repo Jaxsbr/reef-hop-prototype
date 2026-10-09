@@ -1,0 +1,20 @@
+{
+  "status": "approved",
+  "selected_option": 1,
+  "approved_on": "2026-10-10",
+  "approved_by": "Jaco",
+  "file": "gull-call.wav",
+  "original_name": "Seagull Ambient 2.wav",
+  "source_page": "https://opengameart.org/content/solo-seagull-sound-effects",
+  "download_url": "https://opengameart.org/sites/default/files/Seagull%20Ambient%202.wav",
+  "uploader": "Rango Mango",
+  "license": "CC0 1.0 Universal",
+  "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+  "source_note": "Uploader states the calls were cut from a real seagull video with permission to share and use commercially; no attribution required. Some outdoor background noise is retained.",
+  "processing": "None; original downloaded WAV, byte-identical to audition option 1.",
+  "sha256": "477246beafe31569b5937483b34b97043f4331a0639358fdcb3a55347d3d7a3a",
+  "duration_seconds": 1.556,
+  "sample_rate": 44100,
+  "channels": 2,
+  "bits_per_sample": 16
+}

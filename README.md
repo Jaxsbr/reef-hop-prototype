@@ -65,7 +65,21 @@ All-four-fish integration passed 27 tests, the production build and Chrome smoke
 
 ## Current playtest revision
 
-The screen contains only the game name, four fish choices, distance score, and Up/Down/Restart controls. The unexplained seabed ovals were removed. Speed increases continuously with distance (`165 + distance * 0.7` pixels/second), and spawn intervals shorten to preserve obstacle spacing. Air jumps follow a 780ms parabolic arc with orientation changing through takeoff and landing. Clouds use layered, irregular puff shapes with varied size and spacing; grass uses four Kenney variants with varied spacing, height and mirroring. Sound is original Web Audio synthesis: quiet ocean wash and tonal ambience, splash noise, bird calls, impact, and a descending loss phrase. Audio starts on the first movement interaction. Old recordings document earlier versions.
+The screen contains only the game name, four fish choices, distance score, and Up/Down/Restart controls. The unexplained seabed ovals were removed. Speed increases continuously with distance (`165 + distance * 0.7` pixels/second), and spawn intervals shorten to preserve obstacle spacing. Air jumps follow a 780ms parabolic arc with orientation changing through takeoff and landing. Clouds use layered, irregular puff shapes with varied size and spacing; grass uses four Kenney variants with varied spacing, height and mirroring. Sound uses original Web Audio synthesis for quiet ocean wash and tonal ambience, splash noise, impact, and a descending loss phrase. The gull uses the approved real recording described below. Audio starts on the first movement interaction. Old recordings document earlier versions.
+
+## Recorded gull call (2026-10-10)
+
+Jaco selected recorded option 1: the unmodified 1.556-second `Seagull Ambient 2.wav` from [Solo Seagull Sound Effects](https://opengameart.org/content/solo-seagull-sound-effects), uploaded by Rango Mango under CC0. [Source and license metadata](assets/audio/gull-call.json) accompanies the approved WAV in `assets/audio/`; Vite bundles the file with the correct deployment base path.
+
+Each spawned gull independently has a 50% chance of one call and a 50% chance of silence. Calling gulls choose a random point across their visible flight. There is no startup delay, shared cooldown or double call. Separate audio sources let nearby callers play their selected sounds, including overlapping recordings, so staggered spawn groups do not suppress each other's choices. The percentage is a probability per bird, not an alternating pattern or a quota for each small group.
+
+Call choices and timing are independent of obstacle spawn timing. No new calls trigger offscreen, while idle, muted, or after a loss. The WAV loads and decodes on the first movement interaction; a call is skipped if its buffer has not loaded yet. Each call uses the shared master volume. `src/gull-calls.js` owns the per-gull schedule; its tests cover the 50/50 probability, single calls, visibility and independent opportunities for nearby birds.
+
+## Varied gull flight (2026-10-10)
+
+Gulls have four vertical routes: a short bob, a swoop down near the water then up and back down, a low pass that climbs and settles, and a broad descending/rising glide. Consecutive birds use different route families. Individual routes vary in amplitude, height and turning point; short bobs also vary in phase and frequency. Smooth curves and a restrained beak tilt follow the flight direction. The existing wing-flap/blink sprites remain the approved artwork.
+
+Flight follows the bird's progress across the screen, so the route completes naturally at any game speed. Horizontal travel stays at exactly `1.28 * game speed`. The moving bird body owns the collision position, and its warning marker follows its height. Birds remain air hazards; even the low passes cannot collide with a player settled in the shallow water lane. Loss freezes flight and wing animation; removal/restart clear the actor. `scripts/gull-flight-smoke.mjs` checks the real renderer, route variety, horizontal pacing and recorded audio policy, with captures in `captures/gull-flight/`.
 
 ## Distant underwater layers (2026-10-07)
 

@@ -1,5 +1,7 @@
 import Phaser from 'phaser';
 import { OceanAudio } from './audio';
+import { GullCalls } from './gull-calls.js';
+import { GullFlight } from './gull-flight.js';
 import { ACTOR_ANIMATIONS, HAZARD_ANIMATIONS } from './animation/actors.js';
 import { attachFrameLoop } from './animation/phaser-frame-loop.js';
 import { SharkMouth } from './animation/shark-mouth.js';
@@ -16,7 +18,7 @@ class Reef extends Phaser.Scene {
   for(const config of Object.values(TRASH_ART))this.load.image(config.texture,config.image);
  }
  create(){
-  this.lane=2;this.running=false;this.over=false;this.distance=0;this.spawnClock=0;this.wave=0;this.airUntil=0;this.obstacles=[];this.jump=null;this.turnTilt=0;
+  this.lane=2;this.running=false;this.over=false;this.distance=0;this.spawnClock=0;this.wave=0;this.airUntil=0;this.obstacles=[];this.jump=null;this.turnTilt=0;this.lastGullFlight=null;
   const bg=this.add.graphics().setDepth(0);
   bg.fillStyle(0xabe5f1);bg.fillRect(0,50,W, H-50);
   // Soft bands preserve lane depth cues without hard boundaries.
@@ -120,6 +122,8 @@ class Reef extends Phaser.Scene {
  }
  addHazard(lane,key,x){
  const sprite=this.add.container(x,YS[lane]).setDepth(6);
+ const flight=key==='bird'?new GullFlight({previousKind:this.lastGullFlight}):null;
+ if(flight){this.lastGullFlight=flight.kind;const pose=flight.sample((W-x)/W);sprite.setY(pose.y).setAngle(pose.angle);}
  if(key==='bird'){
   const body=this.add.image(0,0,HAZARD_ANIMATIONS.bird.texture);sprite.add(body);
   sprite.setData('birdBody',body);
@@ -131,7 +135,7 @@ class Reef extends Phaser.Scene {
   const body=this.add.image(0,0,trash.texture).setOrigin(...trash.origin).setScale(trash.scale);
   sprite.add(body);sprite.setData('trashType',trash.type);sprite.setData('trashBody',body);
  }
- const warning=this.add.text(W-35,YS[lane],'!',{fontSize:'26px',fontStyle:'bold',color:'#ffe5a4'}).setOrigin(.5).setDepth(7);this.obstacles.push({sprite,warning,lane,key,animation:key==='shark'?new SharkMouth(shark):key==='bird'?attachFrameLoop(sprite.getData('birdBody'),HAZARD_ANIMATIONS.bird):null,phase:Math.random()*6,wake:0,disturbed:false});}
+ const warning=this.add.text(W-35,sprite.y,'!',{fontSize:'26px',fontStyle:'bold',color:'#ffe5a4'}).setOrigin(.5).setDepth(7);this.obstacles.push({sprite,warning,lane,key,flight,calls:key==='bird'?new GullCalls():null,animation:key==='shark'?new SharkMouth(shark):key==='bird'?attachFrameLoop(sprite.getData('birdBody'),HAZARD_ANIMATIONS.bird):null,phase:Math.random()*6,wake:0,disturbed:false});}
  update(t,delta){const dt=Math.min(delta,40)/1000;for(const b of this.bubbles){b.y-=dt*18;b.x-=dt*12;if(b.y<170)b.y=490;if(b.x<0)b.x=W}
  if(!this.over){ const swimPhase=t/430;
  this.player.y=this.swimPosition.y+Math.sin(swimPhase)*9;
@@ -149,7 +153,9 @@ class Reef extends Phaser.Scene {
  for(const bubble of this.bubbles){bubble.x-=speed*dt*.65;if(bubble.x<0)bubble.x=W;}
  this.drawWaterSurface();this.distance+=dt*speed/20;this.hud.setText(`Distance ${Math.floor(this.distance)} m`);this.spawnClock+=dt;
  if(this.spawnClock>Math.max(.8,1.85*165/speed)){this.spawnClock=0;this.spawn()}
- for(const o of this.obstacles){o.sprite.x-=speed*dt*(o.key==='bird'?1.28:o.key==='shark'?1.12:1);if(o.animation){const state=o.animation.update(delta,o.sprite,this.player);if(o.key==='shark')o.sprite.getData('sharkBody').renderPose(state);}
+ for(const o of this.obstacles){o.sprite.x-=speed*dt*(o.key==='bird'?1.28:o.key==='shark'?1.12:1);
+  if(o.flight){const pose=o.flight.sample((W-o.sprite.x)/W);o.sprite.setY(pose.y).setAngle(pose.angle);o.warning.y=pose.y;}
+  if(o.animation){const state=o.animation.update(delta,o.sprite,this.player);if(o.key==='shark')o.sprite.getData('sharkBody').renderPose(state);}
   if(o.key==='rubbish'){
    if(!o.disturbed&&o.sprite.x<this.player.x&&Math.abs(YS[o.lane]-this.player.y)<140){o.disturbed=true;o.wake=1;}
    o.wake=Math.max(0,o.wake-dt*.7);
@@ -157,7 +163,7 @@ class Reef extends Phaser.Scene {
    o.sprite.y=YS[o.lane]+Math.sin(phase)*6+Math.sin(burst)*18*o.wake;
    o.sprite.angle=Math.sin(phase*.7)*12+Math.sin(burst*.8)*38*o.wake;
   }
-  o.warning.setVisible(o.sprite.x>W-100);if(o.key==='bird'&&!o.called&&o.sprite.x<W){o.called=true;audio.bird();}if(Math.abs(o.sprite.x-this.player.x)<44&&Math.abs(o.sprite.y-this.player.y)<37){this.finish();break}}
+  o.warning.setVisible(o.sprite.x>W-100);if(o.calls?.update(dt*1000,(W-o.sprite.x)/W))audio.bird(o.calls);if(Math.abs(o.sprite.x-this.player.x)<44&&Math.abs(o.sprite.y-this.player.y)<37){this.finish();break}}
  this.obstacles=this.obstacles.filter(o=>{if(o.sprite.x< -80){o.animation?.dispose();o.sprite.destroy();o.warning.destroy();return false}return true});
  }
  finish(){for(const o of this.obstacles)o.animation?.dispose();audio.lost();this.over=true;this.playerAnimation?.dispose();this.cameras.main.shake(180,.008);this.player.setTint(0xffa6a6);this.cameras.main.flash(180,255,120,100)}

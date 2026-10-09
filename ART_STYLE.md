@@ -50,6 +50,12 @@ On 2026-10-09 Jaco selected the first, classic gull concept as the winner and ex
 
 Jaco explicitly approved the implemented animation ("looks good") and requested committing and pushing it on 2026-10-09. The approved atlas, manifest and renderer-derived flap/blink preview live in `assets/gull/`. Its browser-loaded copy is in `public/assets/`. Preserve complete wing-tip padding, registered head/body positions, the fixed body origin, and exact eye-only blink substitutions with unchanged alpha. The game uses the existing independent frame-loop scheduler, with a 600ms flap cycle and occasional blinks. Browser verification found no pixel changes outside the eye during swaps and less than one source pixel of head/eye drift across open-eye wing poses.
 
+On 2026-10-10 Jaco requested varied vertical flight rather than substantial speed changes: short bobs, low passes near the water, gradual climbs and descending glides. Reuse the approved gull atlas and its body anchor, with smooth whole-body movement and restrained tilt. Consecutive gulls should use different flight families, with small variations within a family. Retain the game's horizontal pacing and keep gulls in the air; collision follows the visible body.
+
+## Selected gull sound
+
+On 2026-10-10 Jaco selected recorded gull option 1 for game integration, preferring it to the synthetic auditions. The approved call is the unmodified 1.556-second `Seagull Ambient 2.wav` from Rango Mango's [Solo Seagull Sound Effects](https://opengameart.org/content/solo-seagull-sound-effects) pack, published under CC0. The original WAV and source/license metadata live in `assets/audio/`. With procedural spawning being planned separately, Jaco selected a 50% independent chance of hearing one call per spawned bird, at a random point during its visible flight. Remove the earlier 72% silence weighting and shared quiet stretch. Use the shared audio volume; allow nearby callers to play independently so their chosen sounds are not suppressed by other birds.
+
 ## Approved shark animation
 
 On 2026-10-09 Jaco explicitly approved the corrected shark animation ("perfect") and requested keeping only this latest version. The assets in `assets/shark/` and the current renderer are the selected implementation. They follow the approved Rosie materials and reef shark silhouette. The mouth remains open across swim cycles until the player has passed.

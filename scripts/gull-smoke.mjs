@@ -82,11 +82,15 @@ try {
     const cleaned = !scene.obstacles.includes(first) && first.animation.request('blink') === false && !first.sprite.scene;
     // Real bird collision path, with the existing horizontal/vertical limits.
     const bird = second.sprite;
-    bird.x = scene.player.x + 44.1; bird.y = scene.player.y;
+    const verticalGap = gap => {
+      const y = second.flight.sample((960 - bird.x) / 960).y;
+      scene.swimPosition.y = y - gap - Math.sin(scene.time.now / 430) * 9;
+    };
+    bird.x = scene.player.x + 44.1; verticalGap(0);
     scene.update(scene.time.now, 0); const outsideX = scene.over;
-    bird.x = scene.player.x + 43.9; bird.y = scene.player.y + 37.1;
+    bird.x = scene.player.x + 43.9; verticalGap(37.1);
     scene.update(scene.time.now, 0); const outsideY = scene.over;
-    bird.y = scene.player.y + 36.9; scene.update(scene.time.now, 0);
+    verticalGap(36.9); scene.update(scene.time.now, 0);
     const inside = scene.over, lost = second.animation.state;
     second.animation.update(1000);
     const frozen = JSON.stringify(second.animation.state) === JSON.stringify(lost) && second.animation.request('blink') === false;
