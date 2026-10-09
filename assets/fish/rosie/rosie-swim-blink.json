@@ -1,0 +1,90 @@
+{
+  "version": 1,
+  "image": "rosie-swim-blink-sheet.png",
+  "columns": 4,
+  "rows": 2,
+  "frameWidth": 640,
+  "frameHeight": 384,
+  "frameCount": 8,
+  "snoutAnchor": [
+    600,
+    192
+  ],
+  "suggestedFrameDurationMs": 130,
+  "indexing": "zero-based",
+  "baseLoop": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5
+  ],
+  "variants": {
+    "blink": {
+      "replacements": {
+        "1": 6,
+        "2": 7
+      },
+      "trigger": "occasional whole-cycle substitution; interval chosen by runtime"
+    }
+  },
+  "humanFrameOrder": {
+    "swim": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+    ],
+    "blink": [
+      1,
+      7,
+      8,
+      4,
+      5,
+      6
+    ]
+  },
+  "verification": [
+    {
+      "baseFrame": 2,
+      "alternativeFrame": 7,
+      "eye": {
+        "cx": 520,
+        "cy": 174,
+        "rx": 48,
+        "ry": 52,
+        "sourceOffsetX": 2,
+        "sourceOffsetY": 3
+      },
+      "changedChannels": 20469,
+      "outsideEyeChangedPixels": 0,
+      "alphaChangedPixels": 0
+    },
+    {
+      "baseFrame": 3,
+      "alternativeFrame": 8,
+      "eye": {
+        "cx": 520,
+        "cy": 174,
+        "rx": 48,
+        "ry": 52,
+        "sourceOffsetX": 2,
+        "sourceOffsetY": 3
+      },
+      "changedChannels": 20731,
+      "outsideEyeChangedPixels": 0,
+      "alphaChangedPixels": 0
+    }
+  ],
+  "opaqueAlphaThreshold": 128,
+  "visualBounds": {
+    "left": 116,
+    "top": 23,
+    "right": 601,
+    "bottom": 334
+  },
+  "visualBoundsConvention": "right and bottom exclusive; union of eight poses at opaqueAlphaThreshold"
+}

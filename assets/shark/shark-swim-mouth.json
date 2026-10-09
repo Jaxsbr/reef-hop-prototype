@@ -1,0 +1,20 @@
+{
+ "version":1,"image":"shark-swim-mouth-sheet.png","columns":4,"rows":4,
+ "frameWidth":384,"frameHeight":256,"frameCount":16,"indexing":"zero-based",
+ "suggestedFrameDurationMs":130,"baseLoop":[0,1,2,3,4,5],
+ "variants":{"open":{"replacements":{"0":6,"1":7,"2":8,"3":9,"4":10,"5":11}}},
+ "transitions":{"opening":[12,13],"closing":[14,15]},
+ "origin":[0.5,0.59],"scale":0.27,
+ "rig":{
+  "bodyFrame":0,
+  "jawPoses":[
+   {"frame":0,"offset":[0,0]},
+   {"frame":14,"offset":[1.69,16.24]},
+   {"frame":12,"offset":[1.01,15.33]},
+   {"frame":6,"offset":[5.04,2.45]}
+  ],
+  "mouthBounds":[35,178,146,245],
+  "tailStart":235,"tailAmplitude":10,"strokeDurationMs":1100
+ },
+ "notes":"Raw generated cells have positional drift and are donor art, not directly played frames. Renderer locks frame 0 body/head, swaps only registered jaw regions, and bends the tail continuously on an independent clock. Proximity 260px horizontally/125px vertically, closes after passing by 80px."
+}

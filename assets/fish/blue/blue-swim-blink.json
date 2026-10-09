@@ -1,0 +1,192 @@
+{
+  "version": 1,
+  "character": "Blue",
+  "image": "blue-swim-blink-sheet.png",
+  "columns": 4,
+  "rows": 2,
+  "frameWidth": 640,
+  "frameHeight": 384,
+  "frameCount": 8,
+  "snoutAnchor": [
+    600,
+    192
+  ],
+  "visualOrigin": {
+    "point": [
+      600,
+      192
+    ],
+    "normalized": [
+      0.9375,
+      0.5
+    ],
+    "basis": "fixed right-facing snout; no per-frame scaling"
+  },
+  "uniformSourceScale": 1,
+  "opaqueAlphaThreshold": 128,
+  "stableAlphaBounds": [
+    {
+      "frame": 0,
+      "bounds": [
+        129,
+        18,
+        601,
+        295
+      ],
+      "width": 472,
+      "height": 277
+    },
+    {
+      "frame": 1,
+      "bounds": [
+        146,
+        17,
+        601,
+        299
+      ],
+      "width": 455,
+      "height": 282
+    },
+    {
+      "frame": 2,
+      "bounds": [
+        158,
+        17,
+        601,
+        295
+      ],
+      "width": 443,
+      "height": 278
+    },
+    {
+      "frame": 3,
+      "bounds": [
+        148,
+        17,
+        601,
+        299
+      ],
+      "width": 453,
+      "height": 282
+    },
+    {
+      "frame": 4,
+      "bounds": [
+        112,
+        16,
+        601,
+        292
+      ],
+      "width": 489,
+      "height": 276
+    },
+    {
+      "frame": 5,
+      "bounds": [
+        144,
+        14,
+        601,
+        293
+      ],
+      "width": 457,
+      "height": 279
+    },
+    {
+      "frame": 6,
+      "bounds": [
+        146,
+        17,
+        601,
+        299
+      ],
+      "width": 455,
+      "height": 282
+    },
+    {
+      "frame": 7,
+      "bounds": [
+        158,
+        17,
+        601,
+        295
+      ],
+      "width": 443,
+      "height": 278
+    }
+  ],
+  "unionBounds": [
+    112,
+    14,
+    601,
+    299
+  ],
+  "suggestedFrameDurationMs": 130,
+  "indexing": "zero-based",
+  "baseLoop": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5
+  ],
+  "variants": {
+    "blink": {
+      "replacements": {
+        "1": 6,
+        "2": 7
+      },
+      "trigger": "occasional whole-cycle substitution; interval chosen by runtime"
+    }
+  },
+  "humanFrameOrder": {
+    "swim": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+    ],
+    "blink": [
+      1,
+      7,
+      8,
+      4,
+      5,
+      6
+    ]
+  },
+  "verification": [
+    {
+      "baseFrame": 2,
+      "alternativeFrame": 7,
+      "eye": {
+        "cx": 520,
+        "cy": 170,
+        "rx": 47,
+        "ry": 47,
+        "sourceOffsetX": 0,
+        "sourceOffsetY": 0
+      },
+      "changedChannels": 18386,
+      "outsideEyeChangedPixels": 0,
+      "alphaChangedPixels": 0
+    },
+    {
+      "baseFrame": 3,
+      "alternativeFrame": 8,
+      "eye": {
+        "cx": 520,
+        "cy": 170,
+        "rx": 47,
+        "ry": 47,
+        "sourceOffsetX": 0,
+        "sourceOffsetY": 0
+      },
+      "changedChannels": 18769,
+      "outsideEyeChangedPixels": 0,
+      "alphaChangedPixels": 0
+    }
+  ]
+}

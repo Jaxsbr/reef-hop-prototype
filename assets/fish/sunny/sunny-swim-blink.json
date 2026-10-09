@@ -1,0 +1,168 @@
+{
+  "version": 1,
+  "character": "Sunny",
+  "colour": "original vivid orange",
+  "design": "compact plump egg body, short rounded dorsal, small paddle pectoral fins, stubby fan tail",
+  "image": "sunny-swim-blink-sheet.png",
+  "columns": 4,
+  "rows": 2,
+  "frameWidth": 640,
+  "frameHeight": 384,
+  "frameCount": 8,
+  "snoutAnchor": [
+    600,
+    192
+  ],
+  "suggestedOrigin": [
+    0.9375,
+    0.5
+  ],
+  "uniformScale": 1,
+  "visibleBounds": [
+    {
+      "frameIndex": 0,
+      "minX": 231,
+      "minY": 44,
+      "maxX": 601,
+      "maxY": 303,
+      "width": 371,
+      "height": 260
+    },
+    {
+      "frameIndex": 1,
+      "minX": 212,
+      "minY": 46,
+      "maxX": 601,
+      "maxY": 306,
+      "width": 390,
+      "height": 261
+    },
+    {
+      "frameIndex": 2,
+      "minX": 238,
+      "minY": 46,
+      "maxX": 601,
+      "maxY": 301,
+      "width": 364,
+      "height": 256
+    },
+    {
+      "frameIndex": 3,
+      "minX": 227,
+      "minY": 43,
+      "maxX": 600,
+      "maxY": 303,
+      "width": 374,
+      "height": 261
+    },
+    {
+      "frameIndex": 4,
+      "minX": 218,
+      "minY": 44,
+      "maxX": 601,
+      "maxY": 304,
+      "width": 384,
+      "height": 261
+    },
+    {
+      "frameIndex": 5,
+      "minX": 227,
+      "minY": 45,
+      "maxX": 601,
+      "maxY": 305,
+      "width": 375,
+      "height": 261
+    },
+    {
+      "frameIndex": 6,
+      "minX": 212,
+      "minY": 46,
+      "maxX": 601,
+      "maxY": 306,
+      "width": 390,
+      "height": 261
+    },
+    {
+      "frameIndex": 7,
+      "minX": 238,
+      "minY": 46,
+      "maxX": 601,
+      "maxY": 301,
+      "width": 364,
+      "height": 256
+    }
+  ],
+  "suggestedFrameDurationMs": 130,
+  "indexing": "zero-based",
+  "baseLoop": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5
+  ],
+  "variants": {
+    "blink": {
+      "replacements": {
+        "1": 6,
+        "2": 7
+      },
+      "trigger": "occasional whole-cycle substitution; interval chosen by runtime"
+    }
+  },
+  "humanFrameOrder": {
+    "swim": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+    ],
+    "blink": [
+      1,
+      7,
+      8,
+      4,
+      5,
+      6
+    ]
+  },
+  "verification": [
+    {
+      "baseFrame": 2,
+      "alternativeFrame": 7,
+      "eye": {
+        "cx": 531,
+        "cy": 175,
+        "rx": 56,
+        "ry": 58,
+        "clipMinY": 134,
+        "fadeTopPx": 2,
+        "sourceOffsetX": 0,
+        "sourceOffsetY": 4
+      },
+      "changedChannels": 24374,
+      "outsideEyeChangedPixels": 0,
+      "alphaChangedPixels": 0
+    },
+    {
+      "baseFrame": 3,
+      "alternativeFrame": 8,
+      "eye": {
+        "cx": 531,
+        "cy": 175,
+        "rx": 56,
+        "ry": 58,
+        "clipMinY": 134,
+        "fadeTopPx": 2,
+        "sourceOffsetX": 0,
+        "sourceOffsetY": 4
+      },
+      "changedChannels": 24942,
+      "outsideEyeChangedPixels": 0,
+      "alphaChangedPixels": 0
+    }
+  ]
+}

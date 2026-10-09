@@ -1,0 +1,171 @@
+{
+  "version": 1,
+  "character": "Kiwi",
+  "uniformScale": 1,
+  "poseRegistration": "Fixed snout anchor; no per-pose scaling",
+  "stableVisualOrigin": [
+    0.90625,
+    0.5598958333333334
+  ],
+  "visualBounds": {
+    "left": 183,
+    "top": 10,
+    "right": 582,
+    "bottom": 354
+  },
+  "frameBounds": [
+    {
+      "frame": 0,
+      "left": 206,
+      "top": 11,
+      "right": 582,
+      "bottom": 353,
+      "width": 377,
+      "height": 343
+    },
+    {
+      "frame": 1,
+      "left": 195,
+      "top": 11,
+      "right": 582,
+      "bottom": 353,
+      "width": 388,
+      "height": 343
+    },
+    {
+      "frame": 2,
+      "left": 236,
+      "top": 11,
+      "right": 582,
+      "bottom": 353,
+      "width": 347,
+      "height": 343
+    },
+    {
+      "frame": 3,
+      "left": 206,
+      "top": 10,
+      "right": 582,
+      "bottom": 352,
+      "width": 377,
+      "height": 343
+    },
+    {
+      "frame": 4,
+      "left": 183,
+      "top": 11,
+      "right": 582,
+      "bottom": 353,
+      "width": 400,
+      "height": 343
+    },
+    {
+      "frame": 5,
+      "left": 234,
+      "top": 13,
+      "right": 582,
+      "bottom": 354,
+      "width": 349,
+      "height": 342
+    },
+    {
+      "frame": 6,
+      "left": 195,
+      "top": 11,
+      "right": 582,
+      "bottom": 353,
+      "width": 388,
+      "height": 343
+    },
+    {
+      "frame": 7,
+      "left": 236,
+      "top": 11,
+      "right": 582,
+      "bottom": 353,
+      "width": 347,
+      "height": 343
+    }
+  ],
+  "colour": "Original fresh green family; emerald fins, pale mint belly",
+  "bodyDesign": "Tall rounded-disc body, broad leaflike pectoral fins, arched dorsal, petite scalloped tail",
+  "image": "kiwi-swim-blink-sheet.png",
+  "columns": 4,
+  "rows": 2,
+  "frameWidth": 640,
+  "frameHeight": 384,
+  "frameCount": 8,
+  "snoutAnchor": [
+    580,
+    215
+  ],
+  "suggestedFrameDurationMs": 130,
+  "indexing": "zero-based",
+  "baseLoop": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5
+  ],
+  "variants": {
+    "blink": {
+      "replacements": {
+        "1": 6,
+        "2": 7
+      },
+      "trigger": "occasional whole-cycle substitution; interval chosen by runtime"
+    }
+  },
+  "humanFrameOrder": {
+    "swim": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+    ],
+    "blink": [
+      1,
+      7,
+      8,
+      4,
+      5,
+      6
+    ]
+  },
+  "verification": [
+    {
+      "baseFrame": 2,
+      "alternativeFrame": 7,
+      "eye": {
+        "cx": 512,
+        "cy": 195,
+        "rx": 45,
+        "ry": 48,
+        "sourceOffsetX": 0,
+        "sourceOffsetY": 0
+      },
+      "changedChannels": 18541,
+      "outsideEyeChangedPixels": 0,
+      "alphaChangedPixels": 0
+    },
+    {
+      "baseFrame": 3,
+      "alternativeFrame": 8,
+      "eye": {
+        "cx": 512,
+        "cy": 195,
+        "rx": 45,
+        "ry": 48,
+        "sourceOffsetX": 0,
+        "sourceOffsetY": 0
+      },
+      "changedChannels": 19518,
+      "outsideEyeChangedPixels": 0,
+      "alphaChangedPixels": 0
+    }
+  ]
+}
