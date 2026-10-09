@@ -1,10 +1,10 @@
 # Reef Hop — throwaway movement prototype
 
-[Play Reef Hop](https://jaxsbr.github.io/reef-hop-prototype/) — desktop browser. GitHub Actions verifies and deploys pushes to `main`.
+[Play Reef Hop](https://jaxsbr.github.io/reef-hop-prototype/) — browser game. GitHub Actions verifies and deploys pushes to `main`.
 
 Art direction: [ART_STYLE.md](ART_STYLE.md). Jaco approved the rounded glossy 3D fish set and Clear turquoise reef scene reference. [Project agent instructions](AGENTS.md) require these references for future art generation. [Sheets, manifests, and previews](assets/README.md) include the four fish, animated shark, selected classic gull, and selected trash sprites. Scenery still uses prototype graphics.
 
-A small Phaser game for trying four-lane movement and obstacle timing. Exactly one air lane and three water lanes. One Up/Down press moves one lane in 140 ms. Air lasts 850 ms before an automatic dive. Avoid approaching obstacles; distance is the score. Restart with the button or Space after a bump. No saved data.
+A small Phaser game for trying four-lane movement and obstacle timing. Exactly one air lane and three water lanes. One Up/Down press moves one lane in 140 ms. Air lasts 850 ms before an automatic dive. Avoid approaching obstacles; distance is the score. Choose Play again after a bump. No saved data.
 
 ## Run
 
@@ -17,9 +17,9 @@ Open the local URL printed by Vite. `npm run build` creates a static production 
 
 ## Responsive screen sizing
 
-The game always retains its 960 × 520 landscape world (24:13 aspect ratio), including on portrait devices. The page fills the current viewport, with compact fish choices and movement controls above and below the game area. The canvas scales uniformly by `min(availableWidth / 960, availableHeight / 520)` to use the largest fitting dimensions. Unused space is black, with the canvas centered horizontally and vertically. There is no desktop width cap. Mobile safe areas and dynamic viewport height are respected.
+The game always retains its 960 × 520 landscape world (24:13 aspect ratio), including on portrait devices. The game fills the current viewport, with the score and a top-right pause menu button. Fish choices and settings live on the splash and replay screens. The canvas scales uniformly by `min(availableWidth / 960, availableHeight / 520)` to use the largest fitting dimensions. Unused space is black, with the canvas centered horizontally and vertically. There is no desktop width cap. Mobile safe areas and dynamic viewport height are respected.
 
-Phaser FIT owns the canvas size; a ResizeObserver refreshes it whenever the available game area changes. Window resizing, orientation changes, and control wrapping preserve the current run and world coordinates.
+Phaser FIT owns the canvas size; a ResizeObserver refreshes it whenever the available game area changes. Window resizing and orientation changes preserve the current run and world coordinates.
 
 With the development server running, use `REEF_HOP_URL=<local URL> npm run test:resize`. Like the existing browser smoke script, this needs Playwright; set `REEF_HOP_PLAYWRIGHT_MODULE` to a bundled `index.mjs` and optionally `REEF_HOP_BROWSER_CHANNEL=chrome` to use installed Chrome. The check covers ten sizes in both desktop and mobile touch contexts (320 × 568 through 3840 × 2160), largest fitting dimensions, landscape proportions, centering, black bars, no page overflow, visible controls, and preservation of an active run across rotation. Screenshots and measurements are saved under `captures/resizing/`.
 
@@ -120,3 +120,29 @@ An approaching shark opens within 260 horizontal pixels and 125 vertical pixels 
 ## Rendering quality (2026-10-10)
 
 The backing canvas now follows the fitted display size and device pixel density instead of stretching a fixed 960 × 520 bitmap. Rendering density uses up to 2× device density and is capped at 3× the logical world dimensions (2880 × 1560) to bound GPU fill-rate and framebuffer memory. Small displays retain at least the original resolution. The camera maps the backing pixels to the same 960 × 520 gameplay world; resizing and restarting preserve object sizes, collision coordinates, and controls. Approved assets and download sizes are unchanged. Existing linear texture filtering and antialiasing remain enabled. `npm run test:resize` checks physical rendering resolution and camera world dimensions alongside desktop/mobile layout and control behavior.
+
+## Menus and selected touch controls (2026-10-10)
+
+The splash screen uses the approved Clear turquoise reef reference directly, with glossy sea-blue panels, warm yellow action buttons, rising bubbles, and animated portraits drawn from the approved fish sheets. Click the fish beside **Play** to cycle Sunny → Blue → Rosie → Kiwi. Play starts a new run immediately.
+
+The top-right menu button pauses the entire scene. **Continue** resumes the same run, including a partially completed jump; **Exit to menu** cancels it. Losing opens a distance/replay panel with the same fish toggle, **Play again**, and **Back to menu**. Menus fade into gameplay and panels animate in. Buttons, fish changes, and option selections have visual feedback and synthesized click/chime effects. Reduced-motion preferences disable decorative animations.
+
+Both the splash and pause menus share these settings:
+
+- **Fullscreen:** enter or leave fullscreen; shows Unavailable on browsers without the API.
+- **Controls:** **Tap** above/below the fish for one lane, or **Swipe** vertically for one lane per gesture. These are the two selected controls; drag and the prototype selector have been removed. Keyboard Up/Down remains available in either mode. Escape pauses/resumes.
+- **Audio:** mute/unmute all ambience, gulls, gameplay effects, and menu feedback.
+
+Fish and settings remain selected between runs during the session. Swipe is the default; `?controls=tap` or `?controls=swipe` can set the initial mode. Inputs on menus cannot move the fish, cancelled gestures are discarded, and switching away from the window automatically pauses play. No saved data.
+
+`src/menus.js` owns the menu flow, `src/menus.css` owns presentation, and `src/touch-controls.js` owns touch/pointer recognition and keyboard input. The scene emits ready/loss events and uses an elapsed simulation clock so pausing cannot skip the remainder of an air jump.
+
+For a tablet or phone on the same Wi-Fi, run `npm run dev -- --host 0.0.0.0` and open Vite's Network URL. For browser checks, set `REEF_HOP_URL` to the printed URL and use the Playwright environment variables described above:
+
+- `npm run test:menus`: splash sizing, animated fish selection, mute and menu sound generation, fullscreen, native touch input, keyboard, frozen pause/jump, exit, collision, and replay.
+- `npm run test:resize`: 20 desktop/mobile layouts, canvas resolution and centering, and live run preservation.
+- `npm test`: asset, animation, spawning, and gesture intent checks.
+
+Physical-device feel and device-specific fullscreen behavior still need a tablet/phone playtest.
+
+Verification: all 57 unit tests, the menu lifecycle browser checks, all 20 desktop/mobile sizing cases, and the production build passed. Splash, pause, and replay captures were visually inspected on desktop, phone portrait, and small landscape layouts. Captures and the browser report live in `captures/menus/`. The existing Vite bundle-size warning remains.

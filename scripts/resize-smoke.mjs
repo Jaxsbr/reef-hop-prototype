@@ -25,8 +25,11 @@ try {
     page.on('pageerror', error => errors.push(error.message));
     page.on('console', message => { if (message.type() === 'error') errors.push(message.text()); });
     page.on('response', response => { if (response.status() >= 400) errors.push(`${response.status()} ${response.url()}`); });
-    await page.goto(process.env.REEF_HOP_URL || 'http://127.0.0.1:5178/');
+    await page.goto(process.env.REEF_HOP_URL || 'http://127.0.0.1:5179/reef-hop-prototype/');
     await page.waitForFunction(() => window.reefScene?.player);
+    await page.getByRole('button', { name: 'Play', exact: true }).click();
+    await page.waitForFunction(() => document.querySelector('#reef-app').dataset.screen === 'playing');
+    await page.evaluate(() => { window.reefScene.spawn = () => {}; });
     await page.evaluate(() => { window.resizeTestPlayer = window.reefScene.player; });
     for (const [name, width, height] of layouts) {
       await page.setViewportSize({ width, height });
@@ -47,7 +50,7 @@ try {
           backing: [document.querySelector('canvas').width, document.querySelector('canvas').height], dpr: devicePixelRatio,
           cameraWorld: [s.cameras.main.worldView.width, s.cameras.main.worldView.height],
           background: getComputedStyle(document.querySelector('#game')).backgroundColor,
-          controls: [...document.querySelectorAll('button')].map(rect),
+          controls: [...document.querySelectorAll('#menu-button')].map(rect),
           world: [s.scale.gameSize.width, s.scale.gameSize.height], samePlayer: s.player === window.resizeTestPlayer };
       });
       const { parent, canvas } = measurement;
@@ -73,13 +76,13 @@ try {
     }
     // Check control input and preservation of an active run across rotation.
     await page.setViewportSize({ width: 390, height: 844 });
-    await page.getByRole('button', { name: 'Move up one lane' }).click();
+    await page.keyboard.press('ArrowUp');
     await page.waitForFunction(() => window.reefScene.lane === 1 && window.reefScene.distance > 0);
     const before = await page.evaluate(() => window.reefScene.distance);
     await page.setViewportSize({ width: 844, height: 390 });
     await page.waitForFunction(() => window.reefScene.distance > 0);
     assert.ok(await page.evaluate(distance => window.reefScene.distance >= distance && window.reefScene.lane === 1 && window.reefScene.player === window.resizeTestPlayer, before));
-    await page.getByRole('button', { name: 'Move down one lane' }).click();
+    await page.keyboard.press('ArrowDown');
     await page.waitForFunction(() => window.reefScene.lane === 2);
     await context.close();
   }

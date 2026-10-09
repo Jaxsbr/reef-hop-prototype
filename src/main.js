@@ -1,3 +1,4 @@
+import { installMenus } from './menus.js';
 import Phaser from 'phaser';
 import { installRenderQuality } from './render-quality.js';
 import { OceanAudio } from './audio';
@@ -15,13 +16,15 @@ const audio=new OceanAudio();
 let selectedFish="fish_orange";
 const W=WORLD_WIDTH,H=520,YS=LANE_Y,PX=PLAYER_X;
 class Reef extends Phaser.Scene {
+ constructor(){super('Reef');}
+ init(data={}){this.autostart=!!data.autostart;if(data.fish)selectedFish=data.fish;}
  preload(){for(const k of ['seaweed_green_b','seaweed_green_c','seaweed_pink_a','fish_blue','fish_pink','fish_green','fish_orange','fish_grey_long_a','rock_a','seaweed_green_a','bubble_a'])this.load.image(k,`${import.meta.env.BASE_URL}assets/${k}.png`);
   this.load.spritesheet('shark-swim-mouth',`${import.meta.env.BASE_URL}assets/shark-swim-mouth-sheet.png`,{frameWidth:shark.frameWidth,frameHeight:shark.frameHeight,endFrame:15});
   for(const config of [...Object.values(ACTOR_ANIMATIONS),...Object.values(HAZARD_ANIMATIONS)])this.load.spritesheet(config.texture,config.image,config.sheet);
   for(const config of Object.values(TRASH_ART))this.load.image(config.texture,config.image);
  }
  create(){
-  this.lane=2;this.running=false;this.over=false;this.distance=0;this.spawnClock=0;this.obstacles=[];this.jump=null;this.laneTransition=null;this.turnTilt=0;this.lastGullFlight=null;this.spawner=new ObstacleSpawner();
+  this.motionTime=0;this.controlsEnabled=false;this.lane=2;this.running=this.autostart;this.over=false;this.distance=0;this.spawnClock=0;this.obstacles=[];this.jump=null;this.laneTransition=null;this.turnTilt=0;this.lastGullFlight=null;this.spawner=new ObstacleSpawner();
   const bg=this.add.graphics().setDepth(0);
   bg.fillStyle(0xabe5f1);bg.fillRect(0,50,W, H-50);
   // Soft bands preserve lane depth cues without hard boundaries.
@@ -53,8 +56,12 @@ class Reef extends Phaser.Scene {
   this.playerAnimation=animation?attachFrameLoop(this.player,animation):null;
   this.events.once('shutdown',()=>{this.playerAnimation?.dispose();this.playerAnimation=null;for(const o of this.obstacles)o.animation?.dispose();});
   this.hud=this.add.text(22,15,'Distance 0 m',{fontSize:'22px',fontFamily:'sans-serif',color:'#ffffff'}).setDepth(8);
-  this.input.keyboard.on('keydown-UP',e=>{e.preventDefault();if(!e.repeat)this.move(-1)});this.input.keyboard.on('keydown-DOWN',e=>{e.preventDefault();if(!e.repeat)this.move(1)});this.input.keyboard.on('keydown-SPACE',e=>{e.preventDefault();if(this.over)this.scene.restart()});
+  // Consume wall time on resume without advancing tweens through the pause.
+  const resumeTweens=()=>{this.tweens.getDelta(true);};
+  this.events.on('resume',resumeTweens);
+  this.events.once('shutdown',()=>this.events.off('resume',resumeTweens));
   window.reefScene=this;
+  this.game.events.emit('reef-ready',this);
  }
  createSeabed(){
   // Repeatable foreground sand sections with an irregular upper edge.
@@ -111,20 +118,20 @@ class Reef extends Phaser.Scene {
   }
  }
  splash(){audio.splash();for(let i=0;i<10;i++){const drop=this.add.circle(this.player.x+Phaser.Math.Between(-12,12),160,Phaser.Math.Between(2,4),0xd8ffff,.9);this.tweens.add({targets:drop,x:drop.x+Phaser.Math.Between(-38,38),y:Phaser.Math.Between(130,154),alpha:0,duration:400,onComplete:()=>drop.destroy()});}}
- move(dir){if(this.over)return;audio.start();if(!this.running){this.running=true}
+ move(dir){if(this.over||!this.running||!this.controlsEnabled||!this.scene.isActive())return;audio.start();
   if(this.jump)return;
   const next=Phaser.Math.Clamp(this.lane+dir,0,3);if(next===this.lane)return;
   this.tweens.killTweensOf(this.swimPosition);
   this.laneTransition=null;
-  if(next===0){this.lane=0;this.jump={start:this.time.now,duration:JUMP_MS,from:this.player.y};this.splash();return;}
-  this.laneTransition={start:this.time.now,from:this.swimPosition.y,to:next};
+  if(next===0){this.lane=0;this.jump={start:this.motionTime,duration:JUMP_MS,from:this.player.y};this.splash();return;}
+  this.laneTransition={start:this.motionTime,from:this.swimPosition.y,to:next};
   this.lane=next;this.tweens.add({targets:this.swimPosition,y:YS[next],duration:LANE_MOVE_MS,ease:'Cubic.Out',onComplete:()=>{this.laneTransition=null;}});
   this.turnTilt=dir*-14;this.tweens.add({targets:this,turnTilt:0,duration:200});
  }
  spawn(){
   const player={lane:this.lane,y:this.swimPosition.y,
-   jump:this.jump?{from:this.jump.from,elapsed:(this.time.now-this.jump.start)/1000}:null,
-   transition:this.laneTransition?{...this.laneTransition,elapsed:(this.time.now-this.laneTransition.start)/1000}:null};
+   jump:this.jump?{from:this.jump.from,elapsed:(this.motionTime-this.jump.start)/1000}:null,
+   transition:this.laneTransition?{...this.laneTransition,elapsed:(this.motionTime-this.laneTransition.start)/1000}:null};
   const hazards=this.obstacles.map(o=>({lane:o.lane,key:o.key,x:o.sprite.x}));
   const group=this.spawner.next({player,hazards,speed:gameSpeed(this.distance)});
   for(const obstacle of group)this.addHazard(obstacle.lane,obstacle.key,obstacle.x);
@@ -145,7 +152,7 @@ class Reef extends Phaser.Scene {
   sprite.add(body);sprite.setData('trashType',trash.type);sprite.setData('trashBody',body);
  }
  const warning=this.add.text(W-35,sprite.y,'!',{fontSize:'26px',fontStyle:'bold',color:'#ffe5a4'}).setOrigin(.5).setDepth(7);this.obstacles.push({sprite,warning,lane,key,flight,calls:key==='bird'?new GullCalls():null,animation:key==='shark'?new SharkMouth(shark):key==='bird'?attachFrameLoop(sprite.getData('birdBody'),HAZARD_ANIMATIONS.bird):null,phase:Math.random()*6,wake:0,disturbed:false});}
- update(t,delta){const dt=Math.min(delta,40)/1000;for(const b of this.bubbles){b.y-=dt*18;b.x-=dt*12;if(b.y<170)b.y=490;if(b.x<0)b.x=W}
+ update(t,delta){t=this.motionTime+=Math.min(delta,40);const dt=Math.min(delta,40)/1000;for(const b of this.bubbles){b.y-=dt*18;b.x-=dt*12;if(b.y<170)b.y=490;if(b.x<0)b.x=W}
  if(!this.over){ const swimPhase=t/430;
  this.player.y=this.swimPosition.y+Math.sin(swimPhase)*9;
  this.player.x=PX+Math.sin(swimPhase*.5)*3;
@@ -175,20 +182,13 @@ class Reef extends Phaser.Scene {
  this.obstacles=this.obstacles.filter(o=>{if(o.sprite.x< -80){o.animation?.dispose();o.sprite.destroy();o.warning.destroy();return false}return true});
  if(!this.over&&this.spawnClock>spawnInterval(speed)){this.spawnClock=0;this.spawn()}
  }
- finish(){for(const o of this.obstacles)o.animation?.dispose();audio.lost();this.over=true;this.playerAnimation?.dispose();this.cameras.main.shake(180,.008);this.player.setTint(0xffa6a6);this.cameras.main.flash(180,255,120,100)}
+ finish(){if(this.over)return;for(const o of this.obstacles)o.animation?.dispose();audio.lost();this.over=true;this.playerAnimation?.dispose();this.cameras.main.shake(180,.008);this.player.setTint(0xffa6a6);this.cameras.main.flash(180,255,120,100);this.game.events.emit('reef-over',this)}
 }
 const game=new Phaser.Game({type:Phaser.AUTO,parent:'game',width:W,height:H,backgroundColor:'#092e49',scene:Reef,scale:{mode:Phaser.Scale.FIT,autoCenter:Phaser.Scale.CENTER_BOTH,expandParent:false}});
 installRenderQuality(game,W,H);
-// Include layout changes (wrapped controls, mobile browser chrome, safe areas),
+installMenus(game,audio);
+// Include layout changes (fullscreen, mobile browser chrome, safe areas),
 // as well as window resizing, without changing world coordinates or the run.
 const gameResizeObserver=new ResizeObserver(()=>game.scale.refresh());
 gameResizeObserver.observe(document.getElementById('game'));
 game.events.once('destroy',()=>gameResizeObserver.disconnect());
-for(const [id,dir] of [['up',-1],['down',1]])document.getElementById(id).addEventListener('click',()=>game.scene.getScenes(true)[0]?.move(dir));
-document.getElementById('restart').addEventListener('click',()=>game.scene.getScenes(true)[0]?.scene.restart());
-
-for(const button of document.querySelectorAll('[data-fish]'))button.addEventListener('click',()=>{
- selectedFish=`fish_${button.dataset.fish}`;
- for(const other of document.querySelectorAll('[data-fish]'))other.setAttribute('aria-pressed',String(other===button));
- game.scene.getScenes(true)[0]?.scene.restart();
-});

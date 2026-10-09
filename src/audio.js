@@ -11,6 +11,11 @@ export class OceanAudio {
   for(const f of [130.81,196,261.63]){const osc=c.createOscillator(),g=c.createGain();osc.type='sine';osc.frequency.value=f;g.gain.value=.018;osc.connect(g).connect(this.master);osc.start();}
  }
  toggle(){this.muted=!this.muted;if(this.master)this.master.gain.setTargetAtTime(this.muted?0:.22,this.ctx.currentTime,.08);return this.muted;}
+ ui(kind='tap'){
+  this.start();if(this.muted)return;
+  if(kind==='play'){this.tone(440,660,.13,0,.2);this.tone(660,880,.18,.09,.16);}
+  else this.tone(kind==='toggle'?620:520,kind==='toggle'?880:760,.09,0,.15);
+ }
  tone(freq,end,duration,delay=0,volume=.35){if(!this.ctx)return;const c=this.ctx,t=c.currentTime+delay,o=c.createOscillator(),g=c.createGain();o.frequency.setValueAtTime(freq,t);o.frequency.exponentialRampToValueAtTime(end,t+duration);g.gain.setValueAtTime(.001,t);g.gain.exponentialRampToValueAtTime(volume,t+.015);g.gain.exponentialRampToValueAtTime(.001,t+duration);o.connect(g).connect(this.master);o.start(t);o.stop(t+duration+.02);}
  splash(){if(!this.ctx)return;const c=this.ctx,buf=c.createBuffer(1,c.sampleRate*.32,c.sampleRate),d=buf.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=(Math.random()*2-1)*(1-i/d.length);const s=c.createBufferSource(),f=c.createBiquadFilter(),g=c.createGain();s.buffer=buf;f.type='bandpass';f.frequency.value=1300;g.gain.value=.55;s.connect(f).connect(g).connect(this.master);s.start();this.tone(230,75,.24,0,.2);}
  async loadBird(){
