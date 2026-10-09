@@ -5,6 +5,7 @@ import { attachFrameLoop } from './animation/phaser-frame-loop.js';
 import { SharkMouth } from './animation/shark-mouth.js';
 import { createSharkRenderer } from './animation/shark-renderer.js';
 import shark from '../assets/shark/shark-swim-mouth.json' with { type: 'json' };
+import { TRASH_ART } from './trash-art.js';
 const audio=new OceanAudio();
 let selectedFish="fish_orange";
 const W=960,H=520,YS=[105,215,325,435],PX=190;
@@ -12,6 +13,7 @@ class Reef extends Phaser.Scene {
  preload(){for(const k of ['seaweed_green_b','seaweed_green_c','seaweed_pink_a','fish_blue','fish_pink','fish_green','fish_orange','fish_grey_long_a','rock_a','seaweed_green_a','bubble_a'])this.load.image(k,`${import.meta.env.BASE_URL}assets/${k}.png`);
   this.load.spritesheet('shark-swim-mouth',`${import.meta.env.BASE_URL}assets/shark-swim-mouth-sheet.png`,{frameWidth:shark.frameWidth,frameHeight:shark.frameHeight,endFrame:15});
   for(const config of [...Object.values(ACTOR_ANIMATIONS),...Object.values(HAZARD_ANIMATIONS)])this.load.spritesheet(config.texture,config.image,config.sheet);
+  for(const config of Object.values(TRASH_ART))this.load.image(config.texture,config.image);
  }
  create(){
   this.lane=2;this.running=false;this.over=false;this.distance=0;this.spawnClock=0;this.wave=0;this.airUntil=0;this.obstacles=[];this.jump=null;this.turnTilt=0;
@@ -117,30 +119,17 @@ class Reef extends Phaser.Scene {
   if(this.wave%2===0)this.addHazard(0,'bird',W+150);
  }
  addHazard(lane,key,x){
- const sprite=this.add.container(x,YS[lane]).setDepth(6);const g=this.add.graphics();sprite.add(g);
+ const sprite=this.add.container(x,YS[lane]).setDepth(6);
  if(key==='bird'){
-  g.destroy();
   const body=this.add.image(0,0,HAZARD_ANIMATIONS.bird.texture);sprite.add(body);
   sprite.setData('birdBody',body);
  }else if(key==='shark'){
-  g.destroy();
   const body=createSharkRenderer(this,shark);sprite.add(body);
   sprite.setData('sharkBody',body);
  }else{
-  const trash=Phaser.Utils.Array.GetRandom(['bottle','can','bag','cup','boot']);
-  sprite.setData('trashType',trash);
-  if(trash==='bottle'){
-   g.fillStyle(0xdaf3ed,.88);g.fillRoundedRect(-16,-24,32,51,8);g.fillRect(-8,-33,16,15);g.fillStyle(0xf49c74);g.fillRoundedRect(-9,-39,18,8,2);g.fillStyle(0x519aaa);g.fillRect(-16,-4,32,15);g.lineStyle(2,0xffffff,.8);g.lineBetween(-9,-17,-9,-7);
-  }else if(trash==='can'){
-   g.fillStyle(0xbdcbd0);g.fillRoundedRect(-19,-27,38,54,5);g.fillStyle(0xf18d71);g.fillRect(-19,-17,38,34);g.fillStyle(0xe1ebed);g.fillEllipse(0,-25,37,9);g.lineStyle(3,0x637a84);g.strokeEllipse(2,-25,12,4);g.lineStyle(2,0xffd9b4);g.lineBetween(-10,-8,9,8);
-  }else if(trash==='bag'){
-   g.fillStyle(0xe4dbc2,.85);g.fillPoints([{x:-24,y:-17},{x:-17,y:-34},{x:-8,y:-34},{x:-10,y:-17},{x:10,y:-17},{x:8,y:-34},{x:17,y:-34},{x:24,y:-17},{x:28,y:26},{x:2,y:32},{x:-26,y:23}],true);g.lineStyle(2,0xb5b8a8);g.lineBetween(-14,-6,-9,19);g.lineBetween(13,-4,18,23);
-  }else if(trash==='cup'){
-   g.fillStyle(0xd4a786);g.fillPoints([{x:-23,y:-22},{x:23,y:-22},{x:15,y:28},{x:-15,y:28}],true);g.fillStyle(0xf7e5ce);g.fillRoundedRect(-27,-28,54,9,3);g.lineStyle(4,0xeab275);g.lineBetween(8,-27,15,-43);g.fillStyle(0xf5d6a5);g.fillEllipse(0,4,20,16);
-  }else{
-   g.fillStyle(0x89758f);g.fillRoundedRect(-16,-30,30,46,4);g.fillRoundedRect(-17,7,53,23,8);g.fillStyle(0x4e5668);g.fillRoundedRect(-18,25,56,7,3);g.lineStyle(2,0xb8a3bb);g.lineBetween(-8,-20,7,-20);g.lineBetween(-7,-11,7,-11);
-  }
-
+  const trash=Phaser.Utils.Array.GetRandom(Object.values(TRASH_ART));
+  const body=this.add.image(0,0,trash.texture).setOrigin(...trash.origin).setScale(trash.scale);
+  sprite.add(body);sprite.setData('trashType',trash.type);sprite.setData('trashBody',body);
  }
  const warning=this.add.text(W-35,YS[lane],'!',{fontSize:'26px',fontStyle:'bold',color:'#ffe5a4'}).setOrigin(.5).setDepth(7);this.obstacles.push({sprite,warning,lane,key,animation:key==='shark'?new SharkMouth(shark):key==='bird'?attachFrameLoop(sprite.getData('birdBody'),HAZARD_ANIMATIONS.bird):null,phase:Math.random()*6,wake:0,disturbed:false});}
  update(t,delta){const dt=Math.min(delta,40)/1000;for(const b of this.bubbles){b.y-=dt*18;b.x-=dt*12;if(b.y<170)b.y=490;if(b.x<0)b.x=W}

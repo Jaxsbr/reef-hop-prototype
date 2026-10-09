@@ -57,3 +57,9 @@ On 2026-10-09 Jaco explicitly approved the corrected shark animation ("perfect")
 Jaco's motion critique requires a smooth tail stroke and stable vertical registration throughout opening, open swimming and closing; only the mouth should change when switching jaw poses. The initial sixteen generated cells drifted and must not be played as whole-body frames. `shark-renderer.js` now holds one body/head plate, substitutes only registered jaw regions and continuously bends the tail on an independent clock. Preserve that fixed head anchor and mouth-only substitution boundary in future shark revisions.
 
 Keep the required source atlas, manifest, current runtime copy and renderer-captured preview. Superseded generation attempts, duplicate generation exports, draft prompt and before-fix comparison data were discarded at Jaco's request.
+
+## Selected trash artwork
+
+On 2026-10-09 Jaco selected **bottle A, can A, bag B, cup A, and boot A** (called "shoe A" in the selection) and requested replacing the temporary trash art in the game. These five transparent glossy 3D images are the approved trash set: blue-capped clear bottle, coral-red drinks can, warm-cream plastic bag, tan takeaway cup with white sip lid, and olive-brown lace-up boot. Preserve their chosen designs and the approved Rosie/reef materials and lighting.
+
+Approved originals and measured presentation geometry live in `assets/trash/`; browser-loaded copies live in `public/assets/trash/`. Use a uniform scale and center each visible object on its existing hazard container. Preserve the existing five-type random selection, bobbing, rotation, passing-player wake response, lane rules and collision limits. Unselected concepts remain outside the approved asset directory.

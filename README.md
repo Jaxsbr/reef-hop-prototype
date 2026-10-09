@@ -2,7 +2,7 @@
 
 [Play Reef Hop](https://jaxsbr.github.io/reef-hop-prototype/) — desktop browser. GitHub Actions verifies and deploys pushes to `main`.
 
-Art direction: [ART_STYLE.md](ART_STYLE.md). Jaco approved the rounded glossy 3D fish set and Clear turquoise reef scene reference. [Project agent instructions](AGENTS.md) require these references for future art generation. [Sheets, manifests, and previews](assets/README.md) include the four fish, animated shark, and selected classic gull. Scenery and rubbish still use prototype graphics.
+Art direction: [ART_STYLE.md](ART_STYLE.md). Jaco approved the rounded glossy 3D fish set and Clear turquoise reef scene reference. [Project agent instructions](AGENTS.md) require these references for future art generation. [Sheets, manifests, and previews](assets/README.md) include the four fish, animated shark, selected classic gull, and selected trash sprites. Scenery still uses prototype graphics.
 
 A small Phaser game for trying four-lane movement and obstacle timing. Exactly one air lane and three water lanes. One Up/Down press moves one lane in 140 ms. Air lasts 850 ms before an automatic dive. Avoid approaching obstacles; distance is the score. Restart with the button or Space after a bump. No saved data.
 
@@ -82,6 +82,12 @@ Trash now varies between bottles, drinks cans, plastic bags, takeaway cups and d
 Jaco selected classic gull option 01 and requested its integration. Air hazards now use the glossy 3D gull's [eight-cell sheet](assets/gull/gull-flap-blink-sheet.png) and [flap/blink preview](assets/gull/gull-flap-with-blink-preview.gif). Six open-eye wing poses loop at 100ms per frame; occasional whole-cycle blink substitutions replace frames 2 and 3 with matching half/fully closed eye alternatives. Each bird owns an independent scheduler using the same frame-loop system as the fish. The fixed body anchor retains the existing air-lane movement and collision position. Blink frames differ only inside the eye region and preserve alpha exactly.
 
 All 32 unit tests, production build and gull browser check passed. The browser rendered all eight frames, observed automatic blinks during natural gull passes, confirmed unchanged pixels outside the eye and alpha, and checked collision limits, loss freezing, removal and restart. Measured head/eye drift was under one source pixel. [Browser report](captures/gull/smoke-report.json) and open/blink screenshots live in `captures/gull/`. Vite retains the established large-bundle warning.
+
+## Selected trash artwork (2026-10-09)
+
+The temporary trash drawings are replaced by Jaco's selected glossy 3D sprites: bottle A, can A, bag B, cup A and boot A ("shoe A"). Their transparent originals and presentation manifest live in `assets/trash/`, with exact runtime copies in `public/assets/trash/`. Visible shapes are centered and uniformly scaled near the previous artwork's dimensions. Five-type random spawning, bobbing, rotation, passing-player wake response, lanes and collision limits remain unchanged.
+
+All 32 existing unit tests and the production build passed. `scripts/trash-smoke.mjs` checked all five sprites in Chrome, uniform proportions, wake movement, cleanup, collision for every type and restart, with no browser errors. Its actual-scale capture and report are in `captures/trash/`. Run with `REEF_HOP_PLAYWRIGHT_MODULE` set to a bundled Playwright `index.mjs` and optionally `REEF_HOP_URL` set to the local game URL. The established Vite bundle-size warning remains.
 
 ## Animated shark (2026-10-09)
 

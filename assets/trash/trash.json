@@ -1,0 +1,71 @@
+{
+  "approvedOn": "2026-10-09",
+  "boundsMethod": "largest connected alpha > 128 component; source pixels unchanged",
+  "items": {
+    "bottle": {
+      "selectedOption": "bottle A",
+      "image": "bottle.png",
+      "width": 1254,
+      "height": 1254,
+      "visualBounds": [
+        337,
+        88,
+        964,
+        1154
+      ],
+      "visibleHeight": 66
+    },
+    "can": {
+      "selectedOption": "can A",
+      "image": "can.png",
+      "width": 1254,
+      "height": 1254,
+      "visualBounds": [
+        235,
+        109,
+        996,
+        1146
+      ],
+      "visibleHeight": 54
+    },
+    "bag": {
+      "selectedOption": "bag B",
+      "image": "bag.png",
+      "width": 1254,
+      "height": 1254,
+      "visualBounds": [
+        106,
+        73,
+        1188,
+        1178
+      ],
+      "visibleHeight": 66
+    },
+    "cup": {
+      "selectedOption": "cup A",
+      "image": "cup.png",
+      "width": 1254,
+      "height": 1254,
+      "visualBounds": [
+        299,
+        138,
+        1063,
+        1153
+      ],
+      "visibleHeight": 68
+    },
+    "boot": {
+      "selectedOption": "boot A",
+      "image": "boot.png",
+      "width": 1254,
+      "height": 1254,
+      "visualBounds": [
+        125,
+        136,
+        1214,
+        1093
+      ],
+      "visibleHeight": 62
+    }
+  }
+}

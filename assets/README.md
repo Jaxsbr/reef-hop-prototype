@@ -25,6 +25,20 @@ Jaco selected the classic gull on 2026-10-09 and requested replacing the prototy
 
 The runtime copy in `public/assets/` is byte-identical. A fixed body anchor keeps the air hazard's collision position stable while the wings flap. Frame duration is 100ms; each gull independently samples the existing 3–6.5-second blink interval. Loss, removal and restart dispose its scheduler. Gameplay uses the existing air lane, speed, spawn timing, bird call and collision limits. `scripts/gull-smoke.mjs` checks the real browser renderer, pixel-level blink swaps, automatic blinking during passes, and actor lifecycle; results and screenshots live in `captures/gull/`.
 
+## Approved trash sprites
+
+Jaco selected bottle A, can A, bag B, cup A and boot A ("shoe A") on 2026-10-09 for replacement of the temporary Phaser drawings. The selected transparent originals live in `trash/`, with byte-identical browser copies in `public/assets/trash/`.
+
+| Type | Selected design | Approved image | Visible height |
+| --- | --- | --- | --- |
+| Bottle | A — blue cap and clear ribbed body | [Bottle](trash/bottle.png) | 66 px |
+| Can | A — coral-red can with cream swoosh | [Can](trash/can.png) | 54 px |
+| Bag | B — warm-cream plastic bag | [Bag](trash/bag.png) | 66 px |
+| Cup | A — tan cup with white sip lid | [Cup](trash/cup.png) | 68 px |
+| Boot | A — olive-brown lace-up boot | [Boot](trash/boot.png) | 62 px |
+
+Each original is 1254 × 1254 with alpha transparency. [Presentation manifest](trash/trash.json) records selections and the largest connected alpha > 128 component's bounds. `src/trash-art.js` uses those bounds to center visible shapes and apply uniform scale without changing source pixels. The hazard container still owns bobbing, rotation, wake response and collision. `scripts/trash-smoke.mjs` verifies all five texture selections, source/runtime equality, proportions, wake movement, offscreen cleanup, collision and restart. Actual-scale capture and report are in `captures/trash/`.
+
 ## Approved shark animation
 
 [Shark atlas](shark/shark-swim-mouth-sheet.png) and [manifest](shark/shark-swim-mouth.json) contain sixteen left-facing generated poses in a 4 × 4 grid of 384 × 256 cells. Native ImageGen generated the artwork using the approved references. These raw cells have registration drift and must not be played directly. The renderer keeps body frame 0 fixed, registers mouth donors 14, 12 and 6 locally, and continuously bends the tail. The manifest's `rig` describes those anchors and timing; `SharkMouth` owns proximity and sustained mouth state. [The animation preview](shark/shark-swim-mouth-preview.gif) is captured from the actual renderer. Jaco approved this corrected animation on 2026-10-09 and requested removal of previous attempts. The atlas remains because the approved renderer requires it; superseded generation exports and comparison data were removed.
