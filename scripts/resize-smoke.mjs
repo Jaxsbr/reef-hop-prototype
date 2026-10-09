@@ -44,6 +44,8 @@ try {
         const s = window.reefScene;
         return { parent: rect(document.querySelector('#game')), canvas: rect(document.querySelector('canvas')),
           viewport: [innerWidth, innerHeight], scroll: [document.documentElement.scrollWidth, document.documentElement.scrollHeight],
+          backing: [document.querySelector('canvas').width, document.querySelector('canvas').height], dpr: devicePixelRatio,
+          cameraWorld: [s.cameras.main.worldView.width, s.cameras.main.worldView.height],
           background: getComputedStyle(document.querySelector('#game')).backgroundColor,
           controls: [...document.querySelectorAll('button')].map(rect),
           world: [s.scale.gameSize.width, s.scale.gameSize.height], samePlayer: s.player === window.resizeTestPlayer };
@@ -60,6 +62,9 @@ try {
       assert.deepEqual(measurement.world, [960, 520]);
       assert.equal(measurement.background, 'rgb(0, 0, 0)');
       assert.equal(measurement.samePlayer, true);
+      const density = Math.min(3, Math.max(1, factor * Math.min(2, measurement.dpr)));
+      assert.deepEqual(measurement.backing, [Math.ceil(960 * density), Math.ceil(520 * density)], name + ' physical rendering resolution');
+      assert.ok(Math.abs(measurement.cameraWorld[0] - 960) < .01 && Math.abs(measurement.cameraWorld[1] - 520) < .01, name + ' camera preserves gameplay coordinates');
       for (const control of measurement.controls) {
         assert.ok(control.x >= 0 && control.y >= 0 && control.x + control.width <= width + 1 && control.y + control.height <= height + 1, name);
       }

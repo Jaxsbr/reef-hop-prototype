@@ -1,4 +1,5 @@
 import Phaser from 'phaser';
+import { installRenderQuality } from './render-quality.js';
 import { OceanAudio } from './audio';
 import { GullCalls } from './gull-calls.js';
 import { GullFlight } from './gull-flight.js';
@@ -177,6 +178,7 @@ class Reef extends Phaser.Scene {
  finish(){for(const o of this.obstacles)o.animation?.dispose();audio.lost();this.over=true;this.playerAnimation?.dispose();this.cameras.main.shake(180,.008);this.player.setTint(0xffa6a6);this.cameras.main.flash(180,255,120,100)}
 }
 const game=new Phaser.Game({type:Phaser.AUTO,parent:'game',width:W,height:H,backgroundColor:'#092e49',scene:Reef,scale:{mode:Phaser.Scale.FIT,autoCenter:Phaser.Scale.CENTER_BOTH,expandParent:false}});
+installRenderQuality(game,W,H);
 // Include layout changes (wrapped controls, mobile browser chrome, safe areas),
 // as well as window resizing, without changing world coordinates or the run.
 const gameResizeObserver=new ResizeObserver(()=>game.scale.refresh());
