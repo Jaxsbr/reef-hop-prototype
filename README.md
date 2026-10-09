@@ -67,6 +67,14 @@ All-four-fish integration passed 27 tests, the production build and Chrome smoke
 
 The screen contains only the game name, four fish choices, distance score, and Up/Down/Restart controls. The unexplained seabed ovals were removed. Speed increases continuously with distance (`165 + distance * 0.7` pixels/second), and spawn intervals shorten to preserve obstacle spacing. Air jumps follow a 780ms parabolic arc with orientation changing through takeoff and landing. Clouds use layered, irregular puff shapes with varied size and spacing; grass uses four Kenney variants with varied spacing, height and mirroring. Sound uses original Web Audio synthesis for quiet ocean wash and tonal ambience, splash noise, impact, and a descending loss phrase. The gull uses the approved real recording described below. Audio starts on the first movement interaction. Old recordings document earlier versions.
 
+## Procedural obstacles (2026-10-10)
+
+Obstacle groups now use random choices across all four lanes instead of a repeating six-wave sequence. Each group proposes one, two or three obstacles with fixed probabilities (40%, 40%, 20%). The player's current lane is favoured, followed by adjacent lanes; distant lanes remain possible. Multiple obstacles occupy distinct lanes and are staggered horizontally by 70–180 pixels. Birds participate in these groups instead of spawning every second wave. Their flight, animation and call policies remain independent.
+
+A shared route check rejects groups that would remove every reachable escape. It includes existing obstacles, acceleration, different hazard speeds, the current movement/jump, swept collision bounds, a 300ms initial reaction allowance, complete lane transitions and air jumps with automatic shallow-water landing. Unsafe proposals are retried; if necessary, a single obstacle or a clear gap replaces the group. Counts, type probabilities and lane weights do not increase with distance; the existing speed growth and spawn interval formula continue to supply progression.
+
+Each restart has a fresh obstacle seed. [Planner details, tuning and verification](docs/spawning.md) describe the safety model. `npm test` includes route traps, stagger/count/targeting distributions and 840 generated scenarios. `scripts/spawn-smoke.mjs` checks the real Phaser scene over two simulated minutes at four starting speeds, including a complete air escape and landing; reports/captures live in `captures/spawning/`.
+
 ## Recorded gull call (2026-10-10)
 
 Jaco selected recorded option 1: the unmodified 1.556-second `Seagull Ambient 2.wav` from [Solo Seagull Sound Effects](https://opengameart.org/content/solo-seagull-sound-effects), uploaded by Rango Mango under CC0. [Source and license metadata](assets/audio/gull-call.json) accompanies the approved WAV in `assets/audio/`; Vite bundles the file with the correct deployment base path.

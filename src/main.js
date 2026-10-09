@@ -8,9 +8,11 @@ import { SharkMouth } from './animation/shark-mouth.js';
 import { createSharkRenderer } from './animation/shark-renderer.js';
 import shark from '../assets/shark/shark-swim-mouth.json' with { type: 'json' };
 import { TRASH_ART } from './trash-art.js';
+import { ObstacleSpawner } from './obstacle-spawner.js';
+import { WORLD_WIDTH, LANE_Y, PLAYER_X, LANE_MOVE_MS, JUMP_MS, COLLISION_X, COLLISION_Y, gameSpeed, spawnInterval, hazardRate, jumpY } from './gameplay.js';
 const audio=new OceanAudio();
 let selectedFish="fish_orange";
-const W=960,H=520,YS=[105,215,325,435],PX=190;
+const W=WORLD_WIDTH,H=520,YS=LANE_Y,PX=PLAYER_X;
 class Reef extends Phaser.Scene {
  preload(){for(const k of ['seaweed_green_b','seaweed_green_c','seaweed_pink_a','fish_blue','fish_pink','fish_green','fish_orange','fish_grey_long_a','rock_a','seaweed_green_a','bubble_a'])this.load.image(k,`${import.meta.env.BASE_URL}assets/${k}.png`);
   this.load.spritesheet('shark-swim-mouth',`${import.meta.env.BASE_URL}assets/shark-swim-mouth-sheet.png`,{frameWidth:shark.frameWidth,frameHeight:shark.frameHeight,endFrame:15});
@@ -18,7 +20,7 @@ class Reef extends Phaser.Scene {
   for(const config of Object.values(TRASH_ART))this.load.image(config.texture,config.image);
  }
  create(){
-  this.lane=2;this.running=false;this.over=false;this.distance=0;this.spawnClock=0;this.wave=0;this.airUntil=0;this.obstacles=[];this.jump=null;this.turnTilt=0;this.lastGullFlight=null;
+  this.lane=2;this.running=false;this.over=false;this.distance=0;this.spawnClock=0;this.obstacles=[];this.jump=null;this.laneTransition=null;this.turnTilt=0;this.lastGullFlight=null;this.spawner=new ObstacleSpawner();
   const bg=this.add.graphics().setDepth(0);
   bg.fillStyle(0xabe5f1);bg.fillRect(0,50,W, H-50);
   // Soft bands preserve lane depth cues without hard boundaries.
@@ -112,13 +114,19 @@ class Reef extends Phaser.Scene {
   if(this.jump)return;
   const next=Phaser.Math.Clamp(this.lane+dir,0,3);if(next===this.lane)return;
   this.tweens.killTweensOf(this.swimPosition);
-  if(next===0){this.lane=0;this.jump={start:this.time.now,duration:780,from:this.player.y};this.splash();return;}
-  this.lane=next;this.tweens.add({targets:this.swimPosition,y:YS[next],duration:140,ease:'Cubic.Out'});
+  this.laneTransition=null;
+  if(next===0){this.lane=0;this.jump={start:this.time.now,duration:JUMP_MS,from:this.player.y};this.splash();return;}
+  this.laneTransition={start:this.time.now,from:this.swimPosition.y,to:next};
+  this.lane=next;this.tweens.add({targets:this.swimPosition,y:YS[next],duration:LANE_MOVE_MS,ease:'Cubic.Out',onComplete:()=>{this.laneTransition=null;}});
   this.turnTilt=dir*-14;this.tweens.add({targets:this,turnTilt:0,duration:200});
  }
- spawn(){const patterns=[[2],[1],[3],[1,3],[2,3],[1,2]];const lanes=patterns[this.wave%patterns.length];this.wave++;
-  for(const lane of lanes)this.addHazard(lane,(this.wave+lane)%3===0?'shark':'rubbish',W+55);
-  if(this.wave%2===0)this.addHazard(0,'bird',W+150);
+ spawn(){
+  const player={lane:this.lane,y:this.swimPosition.y,
+   jump:this.jump?{from:this.jump.from,elapsed:(this.time.now-this.jump.start)/1000}:null,
+   transition:this.laneTransition?{...this.laneTransition,elapsed:(this.time.now-this.laneTransition.start)/1000}:null};
+  const hazards=this.obstacles.map(o=>({lane:o.lane,key:o.key,x:o.sprite.x}));
+  const group=this.spawner.next({player,hazards,speed:gameSpeed(this.distance)});
+  for(const obstacle of group)this.addHazard(obstacle.lane,obstacle.key,obstacle.x);
  }
  addHazard(lane,key,x){
  const sprite=this.add.container(x,YS[lane]).setDepth(6);
@@ -143,17 +151,16 @@ class Reef extends Phaser.Scene {
  this.player.setAngle(Math.cos(swimPhase)*4+(this.turnTilt||0));
  if(this.playerAnimation)this.playerAnimation.update(delta);
  else this.player.setDisplaySize(70+Math.sin(t/105)*3,70-Math.sin(t/105)*2);
- if(this.jump){const p=Phaser.Math.Clamp((t-this.jump.start)/this.jump.duration,0,1);this.player.y=Phaser.Math.Linear(this.jump.from,YS[1],p)-130*4*p*(1-p);this.player.x=PX+Math.sin(Math.PI*p)*24;this.player.setAngle(-38+76*p);if(p>=1){this.jump=null;this.lane=1;this.swimPosition.y=YS[1];this.splash();}}
+ if(this.jump){const p=Phaser.Math.Clamp((t-this.jump.start)/this.jump.duration,0,1);this.player.y=jumpY(this.jump.from,(t-this.jump.start)/1000);this.player.x=PX+Math.sin(Math.PI*p)*24;this.player.setAngle(-38+76*p);if(p>=1){this.jump=null;this.lane=1;this.swimPosition.y=YS[1];this.splash();}}
 
 }
- this.updateDistantReef(t,dt,this.running&&!this.over?165+this.distance*.16:0);
+ this.updateDistantReef(t,dt,this.running&&!this.over?gameSpeed(this.distance):0);
  if(!this.running||this.over)return;
- const speed=165+this.distance*.16;
+ const speed=gameSpeed(this.distance);
  for(const item of this.scenery){item.object.x-=speed*dt*item.rate;if(item.kind==='sand'){if(item.object.x< -320)item.object.x+=1280;continue;}if(item.object.x< -100){item.object.x=W+Phaser.Math.Between(50,170);if(item.kind==='grass')item.object.setTexture(Phaser.Utils.Array.GetRandom(['seaweed_green_a','seaweed_green_b','seaweed_green_c','seaweed_pink_a']));}}
  for(const bubble of this.bubbles){bubble.x-=speed*dt*.65;if(bubble.x<0)bubble.x=W;}
  this.drawWaterSurface();this.distance+=dt*speed/20;this.hud.setText(`Distance ${Math.floor(this.distance)} m`);this.spawnClock+=dt;
- if(this.spawnClock>Math.max(.8,1.85*165/speed)){this.spawnClock=0;this.spawn()}
- for(const o of this.obstacles){o.sprite.x-=speed*dt*(o.key==='bird'?1.28:o.key==='shark'?1.12:1);
+ for(const o of this.obstacles){o.sprite.x-=speed*dt*hazardRate(o.key);
   if(o.flight){const pose=o.flight.sample((W-o.sprite.x)/W);o.sprite.setY(pose.y).setAngle(pose.angle);o.warning.y=pose.y;}
   if(o.animation){const state=o.animation.update(delta,o.sprite,this.player);if(o.key==='shark')o.sprite.getData('sharkBody').renderPose(state);}
   if(o.key==='rubbish'){
@@ -163,8 +170,9 @@ class Reef extends Phaser.Scene {
    o.sprite.y=YS[o.lane]+Math.sin(phase)*6+Math.sin(burst)*18*o.wake;
    o.sprite.angle=Math.sin(phase*.7)*12+Math.sin(burst*.8)*38*o.wake;
   }
-  o.warning.setVisible(o.sprite.x>W-100);if(o.calls?.update(dt*1000,(W-o.sprite.x)/W))audio.bird(o.calls);if(Math.abs(o.sprite.x-this.player.x)<44&&Math.abs(o.sprite.y-this.player.y)<37){this.finish();break}}
+  o.warning.setVisible(o.sprite.x>W-100);if(o.calls?.update(dt*1000,(W-o.sprite.x)/W))audio.bird(o.calls);if(Math.abs(o.sprite.x-this.player.x)<COLLISION_X&&Math.abs(o.sprite.y-this.player.y)<COLLISION_Y){this.finish();break}}
  this.obstacles=this.obstacles.filter(o=>{if(o.sprite.x< -80){o.animation?.dispose();o.sprite.destroy();o.warning.destroy();return false}return true});
+ if(!this.over&&this.spawnClock>spawnInterval(speed)){this.spawnClock=0;this.spawn()}
  }
  finish(){for(const o of this.obstacles)o.animation?.dispose();audio.lost();this.over=true;this.playerAnimation?.dispose();this.cameras.main.shake(180,.008);this.player.setTint(0xffa6a6);this.cameras.main.flash(180,255,120,100)}
 }
