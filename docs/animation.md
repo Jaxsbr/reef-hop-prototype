@@ -39,6 +39,14 @@ Origins use the center of the union of visible bounds, fixed for every pose. Uni
 
 Sunny's inclusive min/max bounds are converted to exclusive right/bottom edges. Blue's union bounds and Kiwi's visual bounds are used as provided. Rosie's manifest now includes the measured union at alpha ≥ 128, with exclusive right/bottom edges; the approved image is unchanged. All frames use the same origin/scale, so tail motion cannot move the anchor. Rosie, Sunny and Blue retain their `(600,192)` snout registration; Kiwi retains `(580,215)`. The registry records each snout's offset from the visible center, including Kiwi's distinct vertical offset. Rotation is around that visible center, while collision remains around the existing gameplay position with the same horizontal/vertical limits.
 
+## Gull wing flap and blink
+
+`HAZARD_ANIMATIONS.bird` uses the same factory, scheduler and Phaser binding as the fish, with the selected classic gull's `assets/gull/gull-flap-blink.json` manifest. Its separate registry leaves player-picker identities unchanged. The loader includes both registries. The scene adds a gull image inside the existing hazard container in place of the vector body and wing tween; each image has an independent frame loop.
+
+The 2048 × 1024 transparent atlas contains eight 512 × 512 cells: six flap poses and eye-only alternatives for base frames 1 and 2 (zero-based), using `{1:6,2:7}`. Flap frames last 100ms for a 600ms cycle, with the same independent 3000–6500ms blink deadlines and whole-cycle substitution behavior as the fish. Registered eye donor pixels are applied only within the manifest eye ellipse, preserving base alpha exactly. Wing poses are translated to register the beak/head, then uniformly scaled and padded into complete cells; all poses use the same body anchor, origin and scale. The union's visible width is 84 game pixels. The body anchor, rather than the wings' moving silhouette, sits at the existing hazard/collision position.
+
+The running scene advances gull loops with its full animation delta while retaining the capped movement delta. Loss freezes them; offscreen removal and scene shutdown dispose them. Each replacement gull begins at frame 0 with a fresh blink deadline. The existing air lane, spawn rules, speed, bird call and collision limits apply. `scripts/gull-smoke.mjs` verifies all eight rendered frames, unchanged pixels outside the eye, unchanged alpha, independent scheduling, head registration, full wing-tip padding, collision limits, loss freezing, cleanup, restart and automatic blinks during actual hazard passes. It uses the existing Playwright/browser environment variables plus optional `REEF_HOP_SHARP_MODULE` to save a renderer-derived preview.
+
 ## Another action using the same interface
 
 This synthetic fixture is tested; it adds no shark art or gameplay behavior:

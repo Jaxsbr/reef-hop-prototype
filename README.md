@@ -2,7 +2,7 @@
 
 [Play Reef Hop](https://jaxsbr.github.io/reef-hop-prototype/) — desktop browser. GitHub Actions verifies and deploys pushes to `main`.
 
-Art direction: [ART_STYLE.md](ART_STYLE.md). Jaco approved the rounded glossy 3D fish set and Clear turquoise reef scene reference. [Project agent instructions](AGENTS.md) require these references for future art generation. [Approved sheets, manifests, and previews](assets/README.md) live in `assets/fish/`. All four selected fish now use their approved swimming/blink sheets. Scenery and hazards still use prototype graphics.
+Art direction: [ART_STYLE.md](ART_STYLE.md). Jaco approved the rounded glossy 3D fish set and Clear turquoise reef scene reference. [Project agent instructions](AGENTS.md) require these references for future art generation. [Sheets, manifests, and previews](assets/README.md) include the four fish, animated shark, and selected classic gull. Scenery and rubbish still use prototype graphics.
 
 A small Phaser game for trying four-lane movement and obstacle timing. Exactly one air lane and three water lanes. One Up/Down press moves one lane in 140 ms. Air lasts 850 ms before an automatic dive. Avoid approaching obstacles; distance is the score. Restart with the button or Space after a bump. No saved data.
 
@@ -49,7 +49,7 @@ The project is a standalone Git repository on the `main` branch, published with 
 
 ## Forward-swimming revision
 
-Seagrass scrolls at the same speed as drifting rubbish; distant seabed patches, clouds, and bubbles scroll at slower speeds for depth. A moving surface wave and subtle fish body animation reinforce swimming forward. Air hazards are flapping gulls. Water hazards are discarded bottles and sharks with visible fins, tails, gills, and eyes. Floating rocks are no longer spawned. Birds, sharks, and bottles are original Phaser vector drawings; Kenney art remains for decorative background fish, bubbles and seagrass.
+Seagrass scrolls at the same speed as drifting rubbish; distant seabed patches, clouds, and bubbles scroll at slower speeds for depth. A moving surface wave and subtle fish body animation reinforce swimming forward. Air hazards are flapping gulls. Water hazards are discarded bottles and sharks with visible fins, tails, gills, and eyes. Floating rocks are no longer spawned. Birds and sharks originally used Phaser vector drawings and now use the glossy 3D art described below; rubbish remains drawn in Phaser. Kenney art remains for decorative background fish, bubbles and seagrass.
 
 Player swimming uses a gentle 9-pixel vertical arc with a matching 4-degree tilt and slight forward sway. Lane changes tween an independent lane position so the swim motion continues smoothly through transitions. All four fish retain this motion with actual frame animation and fixed proportions, replacing the old rapid squash. The scrolling-scenery recording is `captures/reef-hop-scrolling-playtest.mp4` (recorded before the added swimming arc).
 
@@ -76,6 +76,12 @@ Water lane boundaries now blend through soft depth gradients instead of straight
 ## Trash and pacing revision (2026-10-08)
 
 Trash now varies between bottles, drinks cans, plastic bags, takeaway cups and discarded boots, all original Phaser drawings. Trash gently bobs and rotates; nearby pieces react to the passing player with faster, stronger motion that decays over about 1.4 seconds. Collision follows the moving piece. Global speed growth changed from 0.7 to 0.16 pixels/second per metre, retaining initial speed and fish controls. The scrolling foreground seabed now has a thin irregular sand edge, grains and small embedded stones. Build passed and browser smoke check showed no errors.
+
+## Animated classic gull (2026-10-09)
+
+Jaco selected classic gull option 01 and requested its integration. Air hazards now use the glossy 3D gull's [eight-cell sheet](assets/gull/gull-flap-blink-sheet.png) and [flap/blink preview](assets/gull/gull-flap-with-blink-preview.gif). Six open-eye wing poses loop at 100ms per frame; occasional whole-cycle blink substitutions replace frames 2 and 3 with matching half/fully closed eye alternatives. Each bird owns an independent scheduler using the same frame-loop system as the fish. The fixed body anchor retains the existing air-lane movement and collision position. Blink frames differ only inside the eye region and preserve alpha exactly.
+
+All 32 unit tests, production build and gull browser check passed. The browser rendered all eight frames, observed automatic blinks during natural gull passes, confirmed unchanged pixels outside the eye and alpha, and checked collision limits, loss freezing, removal and restart. Measured head/eye drift was under one source pixel. [Browser report](captures/gull/smoke-report.json) and open/blink screenshots live in `captures/gull/`. Vite retains the established large-bundle warning.
 
 ## Animated shark (2026-10-09)
 

@@ -1,0 +1,198 @@
+{
+  "version": 1,
+  "image": "gull-flap-blink-sheet.png",
+  "columns": 4,
+  "rows": 2,
+  "frameWidth": 512,
+  "frameHeight": 512,
+  "frameCount": 8,
+  "snoutAnchor": [
+    66,
+    307.6666666666667
+  ],
+  "bodyAnchor": [
+    259.33333333333337,
+    338.5
+  ],
+  "suggestedFrameDurationMs": 100,
+  "indexing": "zero-based",
+  "baseLoop": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5
+  ],
+  "variants": {
+    "blink": {
+      "replacements": {
+        "1": 6,
+        "2": 7
+      },
+      "trigger": "occasional whole-cycle substitution; interval chosen by runtime"
+    }
+  },
+  "humanFrameOrder": {
+    "flap": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+    ],
+    "blink": [
+      1,
+      7,
+      8,
+      4,
+      5,
+      6
+    ]
+  },
+  "verification": [
+    {
+      "baseFrame": 2,
+      "alternativeFrame": 7,
+      "eye": {
+        "cx": 159.33333333333334,
+        "cy": 274.3333333333333,
+        "rx": 30,
+        "ry": 34.166666666666664
+      },
+      "changedChannels": 8562,
+      "outsideEyeChangedPixels": 0,
+      "alphaChangedPixels": 0
+    },
+    {
+      "baseFrame": 3,
+      "alternativeFrame": 8,
+      "eye": {
+        "cx": 159.33333333333334,
+        "cy": 274.3333333333333,
+        "rx": 30,
+        "ry": 34.166666666666664
+      },
+      "changedChannels": 8948,
+      "outsideEyeChangedPixels": 0,
+      "alphaChangedPixels": 0
+    }
+  ],
+  "registration": [
+    {
+      "frame": 0,
+      "sourceOffset": [
+        0,
+        0
+      ]
+    },
+    {
+      "frame": 1,
+      "sourceOffset": [
+        6,
+        0
+      ]
+    },
+    {
+      "frame": 2,
+      "sourceOffset": [
+        5,
+        0
+      ]
+    },
+    {
+      "frame": 3,
+      "sourceOffset": [
+        6,
+        0
+      ]
+    },
+    {
+      "frame": 4,
+      "sourceOffset": [
+        3,
+        17
+      ]
+    },
+    {
+      "frame": 5,
+      "sourceOffset": [
+        11,
+        21
+      ]
+    },
+    {
+      "frame": 6,
+      "sourceOffset": [
+        7,
+        20
+      ]
+    },
+    {
+      "frame": 7,
+      "sourceOffset": [
+        9,
+        19
+      ]
+    }
+  ],
+  "opaqueAlphaThreshold": 128,
+  "visualBounds": {
+    "left": 57,
+    "top": 75,
+    "right": 490,
+    "bottom": 460
+  },
+  "visualBoundsConvention": "right and bottom exclusive; union of eight registered poses at opaqueAlphaThreshold",
+  "visibleBounds": [
+    {
+      "left": 69,
+      "top": 83,
+      "right": 433,
+      "bottom": 435
+    },
+    {
+      "left": 57,
+      "top": 147,
+      "right": 490,
+      "bottom": 435
+    },
+    {
+      "left": 70,
+      "top": 221,
+      "right": 443,
+      "bottom": 460
+    },
+    {
+      "left": 68,
+      "top": 221,
+      "right": 443,
+      "bottom": 435
+    },
+    {
+      "left": 69,
+      "top": 136,
+      "right": 481,
+      "bottom": 437
+    },
+    {
+      "left": 68,
+      "top": 75,
+      "right": 441,
+      "bottom": 440
+    },
+    {
+      "left": 57,
+      "top": 147,
+      "right": 490,
+      "bottom": 435
+    },
+    {
+      "left": 70,
+      "top": 221,
+      "right": 443,
+      "bottom": 460
+    }
+  ]
+}

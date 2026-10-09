@@ -2,12 +2,13 @@ import rosie from '../../assets/fish/rosie/rosie-swim-blink.json' with { type: '
 import sunny from '../../assets/fish/sunny/sunny-swim-blink.json' with { type: 'json' };
 import blue from '../../assets/fish/blue/blue-swim-blink.json' with { type: 'json' };
 import kiwi from '../../assets/fish/kiwi/kiwi-swim-blink.json' with { type: 'json' };
+import gull from '../../assets/gull/gull-flap-blink.json' with { type: 'json' };
 
-function actor(name, manifest, [left, top, right, bottom], visibleWidth) {
-  const center = [(left + right) / 2, (top + bottom) / 2];
+function actor(name, manifest, [left, top, right, bottom], visibleWidth, { action = 'swim', anchor } = {}) {
+  const center = anchor ?? [(left + right) / 2, (top + bottom) / 2];
   const scale = visibleWidth / (right - left);
   return {
-    texture: `${name}-swim-blink`,
+    texture: `${name}-${action}-blink`,
     image: `${import.meta.env?.BASE_URL ?? '/'}assets/${manifest.image}`,
     sheet: { frameWidth: manifest.frameWidth, frameHeight: manifest.frameHeight, endFrame: manifest.frameCount - 1 },
     loop: {
@@ -15,7 +16,7 @@ function actor(name, manifest, [left, top, right, bottom], visibleWidth) {
       frameDurationMs: manifest.suggestedFrameDurationMs,
       variants: { blink: { replacements: manifest.variants.blink.replacements, intervalMs: [3000, 6500] } },
     },
-    // Fixed bounds center and uniform scale preserve each silhouette and registered snout.
+    // Fixed anchor and uniform scale preserve each silhouette and registered snout.
     origin: [center[0] / manifest.frameWidth, center[1] / manifest.frameHeight],
     scale,
     presentation: {
@@ -40,4 +41,8 @@ export const ACTOR_ANIMATIONS = {
   fish_blue: actor('blue', blue, blue.unionBounds, 76),
   fish_pink: actor('rosie', rosie, rectangle(rosie.visualBounds), 70),
   fish_green: actor('kiwi', kiwi, rectangle(kiwi.visualBounds), 64),
+};
+
+export const HAZARD_ANIMATIONS = {
+  bird: actor('gull', gull, rectangle(gull.visualBounds), 84, { action: 'flap', anchor: gull.bodyAnchor }),
 };

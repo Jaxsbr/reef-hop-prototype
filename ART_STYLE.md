@@ -44,6 +44,12 @@ The fish keep their original orange, blue, pink, and green colour families. Appr
 
 Jaco requested removal of unselected concepts, superseded sheets, donor/source frame exports, draft prompts, and processing intermediates. Keep only the approved set and reference images in the project asset directory. Future generated artwork still requires an explicit selection before it becomes part of this approved set.
 
+## Selected gull design
+
+On 2026-10-09 Jaco selected the first, classic gull concept as the winner and explicitly requested its wing-flap/blink sprite sheet and replacement of the prototype air bird. [Classic gull reference](assets/references/gull-classic-3d.png) is the identity authority: rounded white body, glossy expressive dark eye, orange-yellow beak and orange feet, broad grey-white wings with charcoal tips. Preserve its left-facing side/three-quarter view and friendly expression. The requested sheet follows the fish layout: six open-eye movement poses and two eye-only blink alternatives replacing human frames 2 and 3. This selection authorizes generation and game integration; it does not select either of the other gull concepts.
+
+Jaco explicitly approved the implemented animation ("looks good") and requested committing and pushing it on 2026-10-09. The approved atlas, manifest and renderer-derived flap/blink preview live in `assets/gull/`. Its browser-loaded copy is in `public/assets/`. Preserve complete wing-tip padding, registered head/body positions, the fixed body origin, and exact eye-only blink substitutions with unchanged alpha. The game uses the existing independent frame-loop scheduler, with a 600ms flap cycle and occasional blinks. Browser verification found no pixel changes outside the eye during swaps and less than one source pixel of head/eye drift across open-eye wing poses.
+
 ## Approved shark animation
 
 On 2026-10-09 Jaco explicitly approved the corrected shark animation ("perfect") and requested keeping only this latest version. The assets in `assets/shark/` and the current renderer are the selected implementation. They follow the approved Rosie materials and reef shark silhouette. The mouth remains open across swim cycles until the player has passed.

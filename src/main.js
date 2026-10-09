@@ -1,6 +1,6 @@
 import Phaser from 'phaser';
 import { OceanAudio } from './audio';
-import { ACTOR_ANIMATIONS } from './animation/actors.js';
+import { ACTOR_ANIMATIONS, HAZARD_ANIMATIONS } from './animation/actors.js';
 import { attachFrameLoop } from './animation/phaser-frame-loop.js';
 import { SharkMouth } from './animation/shark-mouth.js';
 import { createSharkRenderer } from './animation/shark-renderer.js';
@@ -11,7 +11,7 @@ const W=960,H=520,YS=[105,215,325,435],PX=190;
 class Reef extends Phaser.Scene {
  preload(){for(const k of ['seaweed_green_b','seaweed_green_c','seaweed_pink_a','fish_blue','fish_pink','fish_green','fish_orange','fish_grey_long_a','rock_a','seaweed_green_a','bubble_a'])this.load.image(k,`${import.meta.env.BASE_URL}assets/${k}.png`);
   this.load.spritesheet('shark-swim-mouth',`${import.meta.env.BASE_URL}assets/shark-swim-mouth-sheet.png`,{frameWidth:shark.frameWidth,frameHeight:shark.frameHeight,endFrame:15});
-  for(const config of Object.values(ACTOR_ANIMATIONS))this.load.spritesheet(config.texture,config.image,config.sheet);
+  for(const config of [...Object.values(ACTOR_ANIMATIONS),...Object.values(HAZARD_ANIMATIONS)])this.load.spritesheet(config.texture,config.image,config.sheet);
  }
  create(){
   this.lane=2;this.running=false;this.over=false;this.distance=0;this.spawnClock=0;this.wave=0;this.airUntil=0;this.obstacles=[];this.jump=null;this.turnTilt=0;
@@ -119,8 +119,9 @@ class Reef extends Phaser.Scene {
  addHazard(lane,key,x){
  const sprite=this.add.container(x,YS[lane]).setDepth(6);const g=this.add.graphics();sprite.add(g);
  if(key==='bird'){
-  g.fillStyle(0xf6f3de);g.fillEllipse(0,5,44,22);g.fillCircle(-19,0,12);g.fillStyle(0xf4b84b);g.fillTriangle(-28,-3,-43,4,-28,7);g.fillStyle(0x263d52);g.fillCircle(-23,-3,2);
-  const wings=this.add.graphics();wings.fillStyle(0xffffff);wings.fillTriangle(0,6,25,-28,13,13);wings.fillTriangle(0,6,-10,-26,-14,7);sprite.add(wings);this.tweens.add({targets:wings,scaleY:.35,duration:240,yoyo:true,repeat:-1});
+  g.destroy();
+  const body=this.add.image(0,0,HAZARD_ANIMATIONS.bird.texture);sprite.add(body);
+  sprite.setData('birdBody',body);
  }else if(key==='shark'){
   g.destroy();
   const body=createSharkRenderer(this,shark);sprite.add(body);
@@ -141,7 +142,7 @@ class Reef extends Phaser.Scene {
   }
 
  }
- const warning=this.add.text(W-35,YS[lane],'!',{fontSize:'26px',fontStyle:'bold',color:'#ffe5a4'}).setOrigin(.5).setDepth(7);this.obstacles.push({sprite,warning,lane,key,animation:key==='shark'?new SharkMouth(shark):null,phase:Math.random()*6,wake:0,disturbed:false});}
+ const warning=this.add.text(W-35,YS[lane],'!',{fontSize:'26px',fontStyle:'bold',color:'#ffe5a4'}).setOrigin(.5).setDepth(7);this.obstacles.push({sprite,warning,lane,key,animation:key==='shark'?new SharkMouth(shark):key==='bird'?attachFrameLoop(sprite.getData('birdBody'),HAZARD_ANIMATIONS.bird):null,phase:Math.random()*6,wake:0,disturbed:false});}
  update(t,delta){const dt=Math.min(delta,40)/1000;for(const b of this.bubbles){b.y-=dt*18;b.x-=dt*12;if(b.y<170)b.y=490;if(b.x<0)b.x=W}
  if(!this.over){ const swimPhase=t/430;
  this.player.y=this.swimPosition.y+Math.sin(swimPhase)*9;
@@ -159,7 +160,7 @@ class Reef extends Phaser.Scene {
  for(const bubble of this.bubbles){bubble.x-=speed*dt*.65;if(bubble.x<0)bubble.x=W;}
  this.drawWaterSurface();this.distance+=dt*speed/20;this.hud.setText(`Distance ${Math.floor(this.distance)} m`);this.spawnClock+=dt;
  if(this.spawnClock>Math.max(.8,1.85*165/speed)){this.spawnClock=0;this.spawn()}
- for(const o of this.obstacles){o.sprite.x-=speed*dt*(o.key==='bird'?1.28:o.key==='shark'?1.12:1);if(o.animation){const state=o.animation.update(delta,o.sprite,this.player);o.sprite.getData('sharkBody').renderPose(state);}
+ for(const o of this.obstacles){o.sprite.x-=speed*dt*(o.key==='bird'?1.28:o.key==='shark'?1.12:1);if(o.animation){const state=o.animation.update(delta,o.sprite,this.player);if(o.key==='shark')o.sprite.getData('sharkBody').renderPose(state);}
   if(o.key==='rubbish'){
    if(!o.disturbed&&o.sprite.x<this.player.x&&Math.abs(YS[o.lane]-this.player.y)<140){o.disturbed=true;o.wake=1;}
    o.wake=Math.max(0,o.wake-dt*.7);
